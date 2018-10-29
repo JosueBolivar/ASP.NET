@@ -1,0 +1,303 @@
+﻿@{
+    @using Microsoft.AspNetCore.Http;
+    ViewData["Title"] = "Mantenedores Page";
+    string sessionName = Context.Session.GetString("_Login");
+
+}
+
+<!-- START BREADCRUMB -->
+<ul class="breadcrumb">
+    <li><a href="#">Mantenedores</a></li>
+    <li class="active">Accesos</li>
+</ul>
+<!-- END BREADCRUMB -->
+
+<!-- PAGE TITLE -->
+<div class="page-title">
+    <h2><span class="fa fa-arrow-circle-o-left"></span> Accesos</h2>
+    <div class="pull-right push-down-20">
+        <button class="btn btn-primary btn-modal pull-right hidden-mobile" data-toggle="modal" data-target="#Nuevo">Nuevo</button>
+    </div>
+</div>
+<!-- END PAGE TITLE -->
+
+<!-- PAGE CONTENT WRAPPER -->
+<div class="page-content-wrap">
+    <div class="row">
+        <div class="col-md-12">
+
+            <!-- START DEFAULT DATATABLE -->
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <div class="table-responsive">
+                        <table class="table datatable">
+                            <thead>
+                                <tr>
+                                    <th>Id</th>
+                                    <th>Tipo</th>
+                                    <th>Nombre</th>
+                                    <th>Perfil</th>
+                                    <th>Concedido</th>
+                                    <th>Editar</th>
+                                    <th>Quitar</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            @if (ViewBag.Accesos != null) {
+                                @foreach (var item in ViewBag.Accesos)
+                                {
+                                <tr>
+                                    <td>@item.Id</td>
+                                    <td>@item.Tipo</td>
+                                    <td>@item.Nombre</td>
+                                    @if (ViewBag.Perfiles != null) {
+                                        @foreach (var perfilitem in ViewBag.Perfiles)
+                                        {
+                                            if (item.PerfilId == perfilitem.IdPerfil) {
+                                                <td>@perfilitem.Descripcion</td>
+                                            }
+                                        }
+                                    } else {
+                                        <td></td>
+                                    }
+                                    @if (item.Concedido == 1) {
+                                        <td>Concedido</td>
+                                    } else {
+                                        <td>Denegado</td>
+                                    }
+                                    <td><button class="btn btn-sm btn-twitter btn-modal hidden-mobile" data-toggle="modal" data-target="#Editar-@item.Id"><span class="glyphicon glyphicon-edit"></span></button></td>
+                                    <td><button class="btn btn-sm btn-inverse btn-modal hidden-mobile" onclick="EliminarAcceso(@item.Id, '@item.Nombre')"><span class="glyphicon glyphicon-trash"></span></button></td>
+                                </tr>
+                                }
+                            }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <!-- END DEFAULT DATATABLE -->
+
+            @* -- Modal Editar/Eliminar -- *@
+            @if (ViewBag.Accesos != null) {
+                @foreach (var item in ViewBag.Accesos)
+                {
+                    <div class="modal" id="Editar-@item.Id" tabindex="-1" role="dialog" aria-labelledby="largeModalHead" aria-hidden="true">
+                        <div class="modal-dialog modal-lg" style="z-index: 999999999;">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                                    <h4 class="modal-title text-uppercase" id="largeModalHead">editar acceso</h4>
+                                </div>
+                                <div class="modal-body" id="club-@item.Id" style="height:400px; overflow-x:auto;">
+                                    <div class="row">
+                                        <form id="Form_@item.Id" class="form-horizontal">
+
+                                            <input id="Id" name="Id" type="hidden" value="@item.Id" />
+                                            <input id="UsuarioDenega" name="UsuarioDenega" type="hidden" />
+                                            <input id="FechaDenega" name="FechaDenega" type="hidden" />
+
+                                            <div class="col-md-12 col-sm-12 col-xs-7">
+                                                <div class="panel-body">
+                                                    <h3><span class="fa fa-pencil"></span> Información</h3>
+                                                    <p>Puede editar los actuales <strong>accesos</strong> al sistema, actualice si desea y luego presione el botón 'Guardar'</p>
+                                                </div>
+                                                <div class="panel panel-default">
+                                                    <div class="panel-body form-group-separated">
+                                                        <div class="form-group">
+                                                            <label class="col-md-3 col-xs-5 control-label">Tipo</label>
+                                                            <div class="col-md-9 col-xs-7">
+                                                                <input type="text" class="form-control" name="Tipo" id="Tipo" value="@item.Tipo" maxlength="120" placeholder="Tipo">
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label class="col-md-3 col-xs-5 control-label">Nombre</label>
+                                                            <div class="col-md-9 col-xs-7">
+                                                                <input type="text" class="form-control" name="Nombre" id="Nombre" value="@item.Nombre" maxlength="120" placeholder="Nombre">
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label class="col-md-3 col-xs-5 control-label">Perfil</label>
+                                                            <div class="col-md-9 col-xs-7">
+                                                                <select class="form-control select" data-style="btn-success" name="PerfilId" id="PerfilId">
+                                                                    @foreach (var perfilItem in ViewBag.Perfiles)
+                                                                    {
+                                                                    @if (item.PerfilId == perfilItem.IdPerfil) {
+                                                                    <option value="@perfilItem.IdPerfil" selected>@perfilItem.Descripcion</option>
+                                                                        } else {
+                                                                    <option value="@perfilItem.IdPerfil">@perfilItem.Descripcion</option>
+                                                                        }
+                                                                    }
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label class="col-md-3 col-xs-5 control-label">Conceder acceso</label>
+                                                            <div class="col-md-9 col-xs-7">
+                                                                <label class="check">
+                                                                    @if (item.Concedido == 1) {
+                                                                        <input class="icheckbox" name="Concedido" id="Concedido" checked="checked" style="position: absolute; opacity: 0;" type="checkbox"><ins class="iCheck-helper" style="position: absolute; top: 0%; left: 0%; display: block; width: 100%; height: 100%; margin: 0px; padding: 0px; background: rgb(255, 255, 255) none repeat scroll 0% 0%; border: 0px none; opacity: 0;"></ins>
+                                                                    } else {
+                                                                        <input class="icheckbox" name="Concedido" id="Concedido" style="position: absolute; opacity: 0;" type="checkbox"><ins class="iCheck-helper" style="position: absolute; top: 0%; left: 0%; display: block; width: 100%; height: 100%; margin: 0px; padding: 0px; background: rgb(255, 255, 255) none repeat scroll 0% 0%; border: 0px none; opacity: 0;"></ins>
+                                                                    }
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <button class="btn btn-primary" type="button" id="guardar_@item.Id" onclick="Grabar(@item.Id)">Guardar</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+            @* -- Fin modal Editar/Eliminar --*@
+
+            @* -- Modal Nuevo --*@
+            <div class="modal" id="Nuevo" tabindex="-1" role="dialog" aria-labelledby="largeModalHead" aria-hidden="true">
+                <div class="modal-dialog modal-lg" style="z-index: 999999999;">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                            <h4 class="modal-title text-uppercase" id="largeModalHead">nuevo acceso</h4>
+                        </div>
+                        <div class="modal-body" id="acceso-0" style="height:400px; overflow-x:auto;">
+                            <div class="row">
+                                <form id="Form_0" class="form-horizontal">
+                                    <input id="UsuarioConcede" name="UsuarioConcede" type="hidden" />
+                                    <input id="FechaConcede" name="FechaConcede" type="hidden" />
+
+                                    <div class="col-md-12 col-sm-12 col-xs-7">
+                                        <div class="panel panel-default">
+                                            <div class="panel-body">
+                                                <h3><span class="fa fa-pencil"></span> Información</h3>
+                                                <p>Ingrese los datos del nuevo <strong>acceso</strong> y luego presione el botón 'Guardar'</p>
+                                            </div>
+                                            <div class="panel-body form-group-separated">
+                                                <div class="form-group">
+                                                    <label class="col-md-3 col-xs-5 control-label">Tipo</label>
+                                                    <div class="col-md-9 col-xs-7">
+                                                        <input type="text" class="form-control" name="Tipo" id="Tipo" maxlength="120" placeholder="Tipo">
+                                                    </div>
+                                                </div>
+                                                <div class="panel-body form-group-separated">
+                                                    <div class="form-group">
+                                                        <label class="col-md-3 col-xs-5 control-label">Nombre</label>
+                                                        <div class="col-md-9 col-xs-7">
+                                                            <input type="text" class="form-control" name="Nombre" id="Nombre" maxlength="120" placeholder="Nombre">
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="col-md-3 col-xs-5 control-label">Perfil</label>
+                                                        <div class="col-md-9 col-xs-7">
+                                                            <select class="form-control select" data-style="btn-success" name="PerfilId" id="PerfilId">
+                                                                @foreach (var perfilItem in ViewBag.Perfiles)
+                                                                {
+                                                                <option value="@perfilItem.IdPerfil">@perfilItem.Descripcion</option>
+                                                                }
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label class="col-md-3 col-xs-5 control-label">Conceder acceso</label>
+                                                        <div class="col-md-9 col-xs-7">
+                                                            <label class="check">
+                                                                <input class="icheckbox" name="Concedido" id="Concedido" style="position: absolute; opacity: 0;" type="checkbox"><ins class="iCheck-helper" style="position: absolute; top: 0%; left: 0%; display: block; width: 100%; height: 100%; margin: 0px; padding: 0px; background: rgb(255, 255, 255) none repeat scroll 0% 0%; border: 0px none; opacity: 0;"></ins>
+                                                            </label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <button class="btn btn-primary" type="button" id="guardar-nuevo" onclick="Grabar(0)">Guardar</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @* -- Fin modal Nuevo --*@
+
+        </div>
+    </div>
+
+</div>
+<!-- PAGE CONTENT WRAPPER -->
+
+<script>
+
+    function Grabar(id) {
+        if (id == 0) {
+            var UsuarioConcede = "@sessionName";
+            var form = document.getElementById("Form_" + id);
+            form.UsuarioConcede.value = UsuarioConcede;
+            form.FechaConcede.value = "@DateTime.Now";
+        }
+
+        var form = document.getElementById("Form_" + id);
+        var Concedido = document.getElementById("Concedido");
+        if (Concedido.value = "on") {
+            form.Concedido.value = 1;
+        } else {
+            form.Concedido.value = 0;
+        }
+
+        var formData = new FormData(document.getElementById("Form_" + id));
+        formData.append("dato", "valor");
+        $.ajax({
+            url: '/Mantenedores/GrabarAccesos',
+            type: 'Post',
+            dataType: "html",
+            data: formData,
+            cache: false,
+            contentType: false,
+            processData: false,
+            error: function (ex) {
+                myalert("Ups!", ex.responseText);
+            },
+            success: function (response) {
+                var datos = response.split(',');
+                var titulo = datos[0];
+                var mensaje = datos[1];
+
+                if (mensaje != "ok") {
+                    myalert(titulo, mensaje);
+                } else {
+                    myalert(titulo, 'El acceso fue grabado exitosamente.');
+                    window.location.href = "/Mantenedores/Accesos";
+                }
+            }
+        });
+    }
+
+    function EliminarAcceso(id, descripcion) {
+        var mensaje = "¿Esta seguro(a) que desea elminar el acceso:\n " +
+            "'" + descripcion + "' ?"
+
+        var r = myconfirm("Confirmar", mensaje).then(function () {
+            var uname = "@sessionName";
+            var form = document.getElementById("Form_" + id);
+            form.UsuarioDenega.value = uname;
+            form.FechaDenega.value = "@DateTime.Now";
+            Grabar(id);
+        }, function () {
+            window.location.href = "/Mantenedores/Accesos";
+        });
+    };
+</script>

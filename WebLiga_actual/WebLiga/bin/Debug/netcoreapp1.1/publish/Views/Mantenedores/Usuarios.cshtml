@@ -1,0 +1,387 @@
+﻿@{
+    @using Microsoft.AspNetCore.Http;
+    ViewData["Title"] = "Mantenedores Page";
+    string sessionName = Context.Session.GetString("_Login");
+
+}
+
+<!-- START BREADCRUMB -->
+<ul class="breadcrumb">
+    <li><a href="#">Mantenedores</a></li>
+    <li class="active">Usuarios</li>
+</ul>
+<!-- END BREADCRUMB -->
+<!-- PAGE TITLE -->
+<div class="page-title">
+    <h2><span class="fa fa-arrow-circle-o-left"></span> Usuarios</h2>
+    <div class="pull-right push-down-20">
+        <button class="btn btn-primary btn-modal pull-right hidden-mobile" data-toggle="modal" data-target="#Nuevo">Nuevo</button>
+    </div>
+</div>
+<!-- END PAGE TITLE -->
+<!-- PAGE CONTENT WRAPPER -->
+<div class="page-content-wrap">
+    <div class="row">
+        <div class="col-md-12">
+
+            <!-- START DEFAULT DATATABLE -->
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <div class="table-responsive">
+                        <table class="table datatable">
+                            <thead>
+                                <tr>
+                                    <th>Login</th>
+                                    <th>Nombre Completo</th>
+                                    <th>Foto</th>
+                                    <th>Perfil</th>
+                                    <th>Club</th>
+                                    <th>Editar</th>
+                                    <th>Quitar</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (ViewBag.Usuarios != null) {
+                                    @foreach (var item in ViewBag.Usuarios)
+                                    {
+                                        <tr>
+                                            <td>@item.Login</td>
+                                            <td>@item.NombreCompleto</td>
+                                            @if (string.IsNullOrEmpty(item.Foto)) {
+                                                <td><img src="~/assets/images/users/no-image.jpg" alt="unknow" height="32" width="32" /></td>
+                                            } else {
+                                                <td><img src="@item.Foto" alt="@item.NombreCompleto" height="32" width="32"></td>
+                                            }
+
+                                            @if (ViewBag.Perfiles != null) {
+                                                @foreach (var perfilitem in ViewBag.Perfiles)
+                                                {
+                                                    if (item.PerfilId == perfilitem.IdPerfil) { 
+                                                        <td>@perfilitem.Descripcion</td>
+                                                    }                                                    
+                                                }
+                                            } else {
+                                                <td></td>
+                                            }
+                                            @if (ViewBag.Clubes != null) {
+                                                @foreach (var clubItem in ViewBag.Clubes)
+                                                {
+                                                    if (item.ClubId == clubItem.IdClub) { 
+                                                        <td>@clubItem.Nombre</td>
+                                                    }                                                    
+                                                }
+                                            } else {
+                                                <td></td>
+                                            }
+                                            <td><button class="btn btn-sm btn-twitter btn-modal hidden-mobile" data-toggle="modal" data-target="#Editar-@item.IdUsuario"><span class="glyphicon glyphicon-edit"></span></button></td>
+                                            <td><button class="btn btn-sm btn-inverse btn-modal hidden-mobile" onclick="EliminarJugador(@item.IdUsuario, '@item.NombreCompleto')"><span class="glyphicon glyphicon-trash"></span></button></td>
+                                        </tr>
+                                    }
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <!-- END DEFAULT DATATABLE -->
+
+            @* -- Modal Editar/Eliminar -- *@
+            @if (ViewBag.Usuarios != null) {
+                @foreach (var item in ViewBag.Usuarios)
+                {
+                    <div class="modal" id="Editar-@item.IdUsuario" tabindex="-1" role="dialog" aria-labelledby="largeModalHead" aria-hidden="true">
+                        <div class="modal-dialog modal-lg" style="z-index: 999999999;">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                                    <h4 class="modal-title text-uppercase" id="largeModalHead">editar usuario</h4>
+                                </div>
+                                <div class="modal-body" id="usuario-@item.IdUsuario" style="height:450px; overflow-x:auto;">
+                                    <div class="row">
+                                        <form id="Form_@item.IdUsuario" class="form-horizontal">
+
+                                            <input id="IdUsuario" name="IdUsuario" type="hidden" value="@item.IdUsuario" />
+                                            <input id="UsuarioElimina" name="UsuarioElimina" type="hidden" />
+                                            <input id="FechaElimina" name="FechaElimina" type="hidden" />
+
+                                            <div class="col-md-4 col-sm-4 col-xs-5">
+                                                <div class="panel panel-default">
+                                                    <div class="panel-body">
+                                                        <h3><span class="fa fa-user"></span> @item.Login</h3>
+                                                        <p>@item.NombreCompleto</p>
+                                                        <div class="text-center" id="user_image">
+                                                            @if (string.IsNullOrEmpty(item.Foto)) {
+                                                                <img id="imgSalida" src="~/assets/images/users/no-image.jpg" alt="unknow" />
+                                                            } else {
+                                                                <img id="imgSalida" src="@item.Foto" alt="@item.NombreCompleto" class="img-thumbnail" height="100" width="200">
+                                                            }
+                                                        </div>
+                                                    </div>
+                                                    <div class="panel-body form-group-separated">
+                                                        <div class="form-group">
+                                                            <div class="col-md-12 col-xs-12">
+                                                                <input type="file" class="fileinput btn btn-primary btn-block btn-rounded" name="files" id="files" title="Cambiar foto" onchange="preview()" />
+                                                            </div>                                                           
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-8 col-sm-8 col-xs-7">
+                                                <div class="panel panel-default">
+                                                    <div class="panel-body">
+                                                        <h3><span class="fa fa-pencil"></span> Información</h3>
+                                                        <p>A continuación los datos del usuario <strong>@item.NombreCompleto</strong>, actualice si desea y luego presione el botón 'Guardar'</p>
+                                                    </div>
+                                                    <div class="panel-body form-group-separated">
+                                                        <div class="form-group">
+                                                            <label class="col-md-3 col-xs-5 control-label">Login</label>
+                                                            <div class="col-md-9 col-xs-7">
+                                                                <input type="text" class="form-control" name="Login" id="Login" value="@item.Login" maxlength="120" placeholder="Login">
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label class="col-md-3 col-xs-5 control-label">Password</label>
+                                                            <div class="col-md-9 col-xs-7">
+                                                                <input type="password" class="form-control" name="Password" id="Password" value="@item.Password" maxlength="120" placeholder="Password">
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label class="col-md-3 col-xs-5 control-label">Nombre Completo</label>
+                                                            <div class="col-md-9 col-xs-7">
+                                                                <input type="text" class="form-control" name="NombreCompleto" id="NombreCompleto" value="@item.NombreCompleto" placeholder="Nombre Completo">
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label class="col-md-3 col-xs-5 control-label">Perfil</label>
+                                                            <div class="col-md-9 col-xs-7">
+                                                                <select class="form-control select" data-style="btn-success" style="display: none;" name="PerfilId" id="PerfilId">
+                                                                    @foreach (var perfilItem in ViewBag.Perfiles)
+                                                                    {
+                                                                        @if (item.PerfilId == perfilItem.IdPerfil) {
+                                                                            <option value="@perfilItem.IdPerfil" selected>@perfilItem.Descripcion</option>
+                                                                        } else {
+                                                                            <option value="@perfilItem.IdPerfil">@perfilItem.Descripcion</option>
+                                                                        }
+                                                                    }
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label class="col-md-3 col-xs-5 control-label">Club</label>
+                                                            <div class="col-md-9 col-xs-7">
+                                                                <select class="form-control select" data-style="btn-success" style="display: none;" name="ClubId" id="ClubId">
+                                                                    @foreach (var clubItem in ViewBag.Clubes)
+                                                                    {
+                                                                        @if (item.ClubId == clubItem.IdClub) {
+                                                                            <option value="@clubItem.IdClub" selected>@clubItem.Nombre</option>
+                                                                        } else {
+                                                                            <option value="@clubItem.IdClub">@clubItem.Nombre</option>
+                                                                        }
+                                                                    }
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <button class="btn btn-primary" type="button" id="guardar_@item.IdUsuario" onclick="Grabar(@item.IdUsuario)">Guardar</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+            @* -- Fin modal Editar/Eliminar --*@
+
+            @* -- Modal Nuevo --*@
+            <div class="modal" id="Nuevo" tabindex="-1" role="dialog" aria-labelledby="largeModalHead" aria-hidden="true">
+                <div class="modal-dialog modal-lg" style="z-index: 999999999;">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                            <h4 class="modal-title text-uppercase" id="largeModalHead">nuevo usuario</h4>
+                        </div>
+                        <div class="modal-body" id="usuario-0" style="height:450px; overflow-x:auto;">
+                            <div class="row">
+                                <form id="Form_0" class="form-horizontal">
+                                    <input id="UsuarioCrea" name="UsuarioCrea" type="hidden" />
+                                    <input id="FechaCrea" name="FechaCrea" type="hidden" />
+
+                                    <div class="col-md-4 col-sm-4 col-xs-5">
+                                        <div class="panel panel-default">
+                                            <div class="panel-body">
+                                                <h3><span class="fa fa-user"></span> Nombres del Jugador</h3>
+                                                <p>Apellidos</p>
+                                                <div class="text-center" id="user_image">
+                                                    <img id="imgSalida" src="~/assets/images/users/no-image.jpg" alt="unknow" />
+                                                </div>
+                                            </div>
+                                            <div class="panel-body form-group-separated">
+                                                <div class="form-group">
+                                                    <div class="col-md-12 col-xs-12">
+                                                        <input type="file" class="fileinput btn btn-primary btn-block btn-rounded" name="files" id="files" title="Seleccionar foto" onchange="preview()" />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-8 col-sm-8 col-xs-7">
+                                        <div class="panel panel-default">
+                                            <div class="panel-body">
+                                                <h3><span class="fa fa-pencil"></span> Información</h3>
+                                                <p>A continuación los datos del usuario <strong>Nombre del Usuario</strong>, actualice si desea y luego presione el botón 'Guardar'</p>
+                                            </div>
+                                            <div class="panel-body form-group-separated">
+                                                <div class="form-group">
+                                                    <label class="col-md-3 col-xs-5 control-label">Login</label>
+                                                    <div class="col-md-9 col-xs-7">
+                                                        <input type="text" class="form-control" name="Login" id="Login" maxlength="120" placeholder="Login">
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-3 col-xs-5 control-label">Password</label>
+                                                    <div class="col-md-9 col-xs-7">
+                                                        <input type="password" class="form-control" name="Password" id="Password" maxlength="120" placeholder="Password">
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-3 col-xs-5 control-label">Nombre Completo</label>
+                                                    <div class="col-md-9 col-xs-7">
+                                                        <input type="text" class="form-control" name="NombreCompleto" id="NombreCompleto" placeholder="Nombre Completo">
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-3 col-xs-5 control-label">Perfil</label>
+                                                    <div class="col-md-9 col-xs-7">
+                                                        <select class="form-control select" data-style="btn-success" style="display: none;" name="PerfilId" id="PerfilId">
+                                                            @foreach (var perfilItem in ViewBag.Perfiles)
+                                                            {
+                                                                <option value="@perfilItem.IdPerfil">@perfilItem.Descripcion</option>
+                                                            }
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-3 col-xs-5 control-label">Club</label>
+                                                    <div class="col-md-9 col-xs-7">
+                                                        <select class="form-control select" data-style="btn-success" style="display: none;" name="ClubId" id="ClubId">
+                                                            @foreach (var clubItem in ViewBag.Clubes)
+                                                            {
+                                                                <option value="@clubItem.IdClub">@clubItem.Nombre</option>
+                                                            }
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <button class="btn btn-primary" type="button" id="guardar-nuevo" onclick="Grabar(0)">Guardar</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @* -- Fin modal Nuevo --*@
+
+        </div>
+    </div>
+
+</div>
+<!-- PAGE CONTENT WRAPPER -->
+
+<script>
+
+    function preview() {
+        addImage();
+
+        function addImage() {
+            var fileToRead = document.getElementById("files");
+
+            //alert(fileToRead);
+
+            var file = fileToRead.files[0],
+                imageType = /image.*/;
+
+            //alert(file);
+
+            if (!file.type.match(imageType))
+                return;
+
+            var reader = new FileReader();
+            reader.onload = fileOnload;
+            reader.readAsDataURL(file);
+        }
+
+        function fileOnload(e) {
+            var result = e.target.result;
+            $('#imgSalida').attr("src", result);
+        }
+    }
+
+    function Grabar(id) {
+        if (id == 0) {
+            var usuariocrea = "@sessionName";
+            var form = document.getElementById("Form_" + id);
+            form.UsuarioCrea.value = usuariocrea;
+            form.FechaCrea.value = "@DateTime.Now";
+        }
+
+        var formData = new FormData(document.getElementById("Form_" + id));
+        formData.append("dato", "valor");
+        $.ajax({
+            url: '/Mantenedores/GrabarUsuarios',
+            type: 'Post',
+            dataType: "html",
+            data: formData,
+            cache: false,
+            contentType: false,
+            processData: false,
+            error: function (ex) {
+                myalert("Ups!", ex.responseText);
+            },
+            success: function (response) {
+                var datos = response.split(',');
+                var titulo = datos[0];
+                var mensaje = datos[1];
+
+                if (mensaje != "ok") {
+                    myalert(titulo, mensaje);
+                } else {
+                    myalert(titulo, 'El usuario fue grabado exitosamente.');
+                    window.location.href = "/Mantenedores/Usuarios";
+                }
+            }
+        });
+    }
+
+    function EliminarJugador(id, nombres) {
+        var mensaje = "¿Esta seguro(a) que desea elminar el usuario:\n " +
+            "'" + nombres + "' ?"
+
+        var r = myconfirm("Confirmar", mensaje).then(function () {
+            var uname = "@sessionName";
+            var form = document.getElementById("Form_" + id);
+            form.UsuarioElimina.value = uname;
+            form.FechaElimina.value = "@DateTime.Now";
+            Grabar(id);
+        }, function () {
+            window.location.href = "/Mantenedores/Usuarios";
+        });
+    };
+
+</script>

@@ -1,0 +1,171 @@
+﻿@{
+    @using Microsoft.AspNetCore.Http;
+    ViewData["Title"] = "Mantenedores Page";
+    string sessionName = Context.Session.GetString("_Login");
+}
+
+<!-- START BREADCRUMB -->
+<ul class="breadcrumb">
+    <li><a href="#">Administrativo</a></li>
+    <li class="active">Inscripciones</li>
+</ul>
+<!-- END BREADCRUMB -->
+
+<!-- PAGE TITLE -->
+<div class="page-title">
+    <h2><span class="fa fa-arrow-circle-o-left"></span> Validar inscripción de jugadores</h2>
+</div>
+<!-- END PAGE TITLE -->
+
+<!-- PAGE CONTENT WRAPPER -->
+<div class="page-content-wrap">
+    <div class="row">
+
+        <!-- START DEFAULT DATATABLE -->
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <div class="table-responsive">
+                    <table class="table datatable">
+                        <thead>
+                            <tr>
+                                <th>Folio</th>
+                                <th>Club</th>
+                                <th>Jugador</th>
+                                <th>Validar</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        @if (ViewBag.Fichas != null) {
+                            @foreach (var item in ViewBag.Fichas)
+                            {
+                            <tr>
+                                <td>@item.Id</td>
+                                @if (ViewBag.Clubes != null) {
+                                    @foreach (var clubItem in ViewBag.Clubes)
+                                    {
+                                        if (item.ClubId == clubItem.IdClub) {
+                                            <td>@clubItem.Nombre</td>
+                                        }
+                                    }
+                                } else {
+                                    <td></td>
+                                }
+                                @if (ViewBag.Jugadores != null) {
+                                    @foreach (var jugadorItem in ViewBag.Jugadores)
+                                    {
+                                        if (item.JugadorId == jugadorItem.IdJugador) {
+                                            <td>@jugadorItem.Nombres @jugadorItem.Apellidos</td>
+                                        }
+                                    }
+                                } else {
+                                    <td></td>
+                                }
+                                <td>
+                                    <select class="form-control select" data-style="btn-success" name="cboValidar" id="cboValidar">
+                                        <option selected value="0">No</option>
+                                        <option value="1">Si</option>
+                                    </select>
+                                </td>
+                            </tr>
+                            }
+                        }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <!-- END DEFAULT DATATABLE -->
+        
+    </div>
+
+</div>
+<!-- PAGE CONTENT WRAPPER -->
+
+<script>
+    // Consigue el elemento provincias/poblaciones por su identificador id. Es un método del DOM de HTML
+    var id1 = document.getElementById("ClubId");
+    var id2 = document.getElementById("JugadorId");
+
+    // Añade un evento change al elemento id1, asociado a la función cambiar()
+    if (id1.addEventListener) {     // Para la mayoría de los navegadores, excepto IE 8 y anteriores
+        id1.addEventListener("change", cambiar);
+    } else if (id1.attachEvent) {   // Para IE 8 y anteriores
+        id1.attachEvent("change", cambiar); // attachEvent() es el método equivalente a addEventListener()
+    }
+
+    // Definición de la función cambiar()
+    function cambiar() {
+        for (var i = 0; i < id2.options.length; i++)
+
+            // -- Inicio del comentario -- 
+            // Muestra solamente los id2 que sean iguales a los id1 seleccionados, según la propiedad display
+            //alert('Jugador: ' + id2.options[i].getAttribute("codigo"));
+            //alert('Club: ' + id1.options[id1.selectedIndex].getAttribute("codigo"));
+            if (id2.options[i].getAttribute("codigo") == id1.options[id1.selectedIndex].getAttribute("codigo")) {
+                id2.options[i].style.display = "block";
+            } else {
+                id2.options[i].style.display = "none";
+            }
+        // -- Fin del comentario --
+
+        id2.value = "";
+    }
+
+    // Llamada a la función cambiar()
+    cambiar();
+
+    function Grabar(id) {
+        if (id == 0) {
+            var UsuarioCrea = "@sessionName";
+            var form = document.getElementById("Form_" + id);
+            form.UsuarioCrea.value = UsuarioCrea;
+            form.FechaCrea.value = "@DateTime.Now";
+            form.CampeonatoId.value = document.getElementById("campeonato").value;
+        }
+
+        var form = document.getElementById("Form_" + id);
+        form.CampeonatoId.value = document.getElementById("campeonato").value;
+        alert(form.CampeonatoId.value);
+        var formData = new FormData(document.getElementById("Form_" + id));
+        formData.append("dato", "valor");
+        $.ajax({
+            url: '/Administrativo/GrabarIngresoFicha',
+            type: 'Post',
+            dataType: "html",
+            data: formData,
+            cache: false,
+            contentType: false,
+            processData: false,
+            error: function (ex) {
+                myalert("Ups!", ex.responseText);
+            },
+            success: function (response) {
+                var datos = response.split(',');
+                var titulo = datos[0];
+                var mensaje = datos[1];
+
+                if (mensaje != "ok") {
+                    myalert(titulo, mensaje);
+                } else {
+                    myalert(titulo, 'El ingreso de la ficha fue grabado exitosamente.');
+                    window.location.href = "/Administrativo/IngresoFicha";
+                }
+            }
+        });
+    }
+
+    function EliminarAcceso(id, descripcion) {
+        var mensaje = "¿Esta seguro(a) que desea elminar el acceso:\n " +
+            "'" + descripcion + "' ?"
+
+        var r = myconfirm("Confirmar", mensaje).then(function () {
+            var uname = "@sessionName";
+            var form = document.getElementById("Form_" + id);
+            form.UsuarioDenega.value = uname;
+            form.FechaDenega.value = "@DateTime.Now";
+            Grabar(id);
+        }, function () {
+            window.location.href = "/Mantenedores/Accesos";
+        });
+    };
+</script>

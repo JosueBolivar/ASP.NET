@@ -1,0 +1,244 @@
+﻿@{
+    @using Microsoft.AspNetCore.Http;
+    ViewData["Title"] = "Mantenedores Page";
+    string sessionName = Context.Session.GetString("_Login");
+
+}
+
+<!-- START BREADCRUMB -->
+<ul class="breadcrumb">
+    <li><a href="#">Mantenedores</a></li>
+    <li class="active">Campeonatos</li>
+</ul>
+<!-- END BREADCRUMB -->
+
+<!-- PAGE TITLE -->
+<div class="page-title">
+    <h2><span class="fa fa-arrow-circle-o-left"></span> Campeonatos</h2>
+    <div class="pull-right push-down-20">
+        <button class="btn btn-primary btn-modal pull-right hidden-mobile" data-toggle="modal" data-target="#Nuevo">Nuevo</button>
+    </div>
+</div>
+<!-- END PAGE TITLE -->
+
+<!-- PAGE CONTENT WRAPPER -->
+<div class="page-content-wrap">
+    <div class="row">
+        <div class="col-md-12">
+
+            <!-- START DEFAULT DATATABLE -->
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <div class="table-responsive">
+                        <table class="table datatable">
+                            <thead>
+                                <tr>
+                                    <th>Id</th>
+                                    <th>Nombre</th>
+                                    <th>Fecha Inicio</th>
+                                    <th>Fecha Término</th>
+                                    <th>Editar</th>
+                                    <th>Quitar</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (ViewBag.Campeonatos != null) {
+                                @foreach (var item in ViewBag.Campeonatos)
+                                {
+                                <tr>
+                                    <td>@item.Id</td>
+                                    <td>@item.NombreCampeonato</td>
+                                    <td>@item.FechaInicio</td>
+                                    <td>@item.FechaTermino</td>
+                                    <td><button class="btn btn-sm btn-twitter btn-modal hidden-mobile" data-toggle="modal" data-target="#Editar-@item.Id"><span class="glyphicon glyphicon-edit"></span></button></td>
+                                    <td><button class="btn btn-sm btn-inverse btn-modal hidden-mobile" onclick="EliminarCampeonato(@item.Id, '@item.NombreCampeonato')"><span class="glyphicon glyphicon-trash"></span></button></td>
+                                </tr>
+                                }
+                            }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <!-- END DEFAULT DATATABLE -->
+
+            @* -- Modal Editar/Eliminar -- *@
+            @if (ViewBag.Campeonatos != null) {
+                @foreach (var item in ViewBag.Campeonatos)
+                {
+                    <div class="modal" id="Editar-@item.Id" tabindex="-1" role="dialog" aria-labelledby="largeModalHead" aria-hidden="true">
+                        <div class="modal-dialog modal-lg" style="z-index: 999999999;">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                                    <h4 class="modal-title text-uppercase" id="largeModalHead">editar campeonato</h4>
+                                </div>
+                                <div class="modal-body" id="campeonato-@item.Id" style="height:350px; overflow-x:auto;">
+                                    <div class="row">
+                                        <form id="Form_@item.Id" class="form-horizontal">
+
+                                            <input id="Id" name="Id" type="hidden" value="@item.Id" />
+                                            <input id="UsuarioElimina" name="UsuarioElimina" type="hidden" />
+                                            <input id="FechaElimina" name="FechaElimina" type="hidden" />
+
+                                            <div class="col-md-12 col-sm-12 col-xs-7">
+                                                <div class="panel-body">
+                                                    <h3><span class="fa fa-pencil"></span> Información</h3>
+                                                    <p>Puede editar los actuales <strong>campeonatos</strong> del sistema, actualice si desea y luego presione el botón 'Guardar'</p>
+                                                </div>
+                                                <div class="panel panel-default">
+                                                    <div class="panel-body form-group-separated">
+                                                        <div class="form-group">
+                                                            <label class="col-md-3 col-xs-5 control-label">Nombre Campeonato</label>
+                                                            <div class="col-md-9 col-xs-7">
+                                                                <input type="text" class="form-control" name="NombreCampeonato" id="NombreCampeonato" value="@item.NombreCampeonato" maxlength="120" placeholder="Nombre campeonato">
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label class="col-md-3 col-xs-5 control-label">Fecha Inicio</label>
+                                                            <div class="col-md-9 col-xs-7">
+                                                                <input type="text" class="form-control datepicker" name="FechaInicio" id="FechaInicio" value="@item.FechaInicio">
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label class="col-md-3 col-xs-5 control-label">Fecha Término</label>
+                                                            <div class="col-md-9 col-xs-7">
+                                                                <input type="text" class="form-control datepicker" name="FechaTermino" id="FechaInicio" value="@item.FechaTermino">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <button class="btn btn-primary" type="button" id="guardar_@item.Id" onclick="Grabar(@item.Id)">Guardar</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+            @* -- Fin modal Editar/Eliminar --*@
+
+            @* -- Modal Nuevo --*@
+            <div class="modal" id="Nuevo" tabindex="-1" role="dialog" aria-labelledby="largeModalHead" aria-hidden="true">
+                <div class="modal-dialog modal-lg" style="z-index: 999999999;">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                            <h4 class="modal-title text-uppercase" id="largeModalHead">nuevo campeonato</h4>
+                        </div>
+                        <div class="modal-body" id="campeonato-0" style="height:350px; overflow-x:auto;">
+                            <div class="row">
+                                <form id="Form_0" class="form-horizontal">
+                                    <input id="UsuarioCrea" name="UsuarioCrea" type="hidden" />
+                                    <input id="FechaCrea" name="FechaCrea" type="hidden" />
+
+                                    <div class="col-md-12 col-sm-12 col-xs-7">
+                                        <div class="panel panel-default">
+                                            <div class="panel-body">
+                                                <h3><span class="fa fa-pencil"></span> Información</h3>
+                                                <p>Ingrese los datos del nuevo <strong>campeonato</strong> y luego presione el botón 'Guardar'</p>
+                                            </div>
+                                            <div class="panel-body form-group-separated">
+                                                <div class="form-group">
+                                                    <label class="col-md-3 col-xs-5 control-label">Nombre Campeonato</label>
+                                                    <div class="col-md-9 col-xs-7">
+                                                        <input type="text" class="form-control" name="NombreCampeonato" id="NombreCampeonato" maxlength="120" placeholder="Nombre Campeonato">
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-3 col-xs-5 control-label">Fecha Inicio</label>
+                                                    <div class="col-md-9 col-xs-7">
+                                                        <input type="text" class="form-control datepicker" name="FechaInicio" id="FechaInicio">
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-3 col-xs-5 control-label">Fecha Término</label>
+                                                    <div class="col-md-9 col-xs-7">
+                                                        <input type="text" class="form-control datepicker" name="FechaTermino" id="FechaTermino">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <button class="btn btn-primary" type="button" id="guardar-nueva" onclick="Grabar(0)">Guardar</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @* -- Fin modal Nuevo --*@
+
+        </div>
+    </div>
+
+</div>
+<!-- PAGE CONTENT WRAPPER -->
+
+<script>
+
+    function Grabar(id) {
+        if (id == 0) {
+            var usuariocrea = "@sessionName";
+            var form = document.getElementById("Form_" + id);
+            form.UsuarioCrea.value = usuariocrea;
+            form.FechaCrea.value = "@DateTime.Now";
+        }
+
+        var formData = new FormData(document.getElementById("Form_" + id));
+        formData.append("dato", "valor");
+        $.ajax({
+            url: '/Mantenedores/GrabarCampeonatos',
+            type: 'Post',
+            dataType: "html",
+            data: formData,
+            cache: false,
+            contentType: false,
+            processData: false,
+            error: function (ex) {
+                myalert("Ups!", ex.responseText);
+            },
+            success: function (response) {
+                var datos = response.split(',');
+                var titulo = datos[0];
+                var mensaje = datos[1];
+
+                if (mensaje != "ok") {
+                    myalert(titulo, mensaje);
+                } else {
+                    myalert(titulo, 'El campeonato fue grabado exitosamente.');
+                    window.location.href = "/Mantenedores/Campeonatos";
+                }
+            }
+        });
+    }
+
+    function EliminarCampeonato(id, descripcion) {
+        var mensaje = "¿Esta seguro(a) que desea elminar el campeonato:\n " +
+            "'" + descripcion + "' ?"
+
+        var r = myconfirm("Confirmar", mensaje).then(function () {
+            var uname = "@sessionName";
+            var form = document.getElementById("Form_" + id);
+            form.UsuarioElimina.value = uname;
+            form.FechaElimina.value = "@DateTime.Now";
+            Grabar(id);
+        }, function () {
+            window.location.href = "/Mantenedores/Campeonatos";
+        });
+    };
+</script>

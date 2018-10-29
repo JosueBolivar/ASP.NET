@@ -1,0 +1,56 @@
+﻿
+<ul class="x-navigation">
+    @if (ViewBag.Accesos != null)
+    {
+    <li class='xn-openable active'>
+        <a href="#"><span class="fa fa-dashboard"></span> <span class="xn-text">Mantenedores</span></a>
+        <ul>
+            @foreach (var accesoItem in ViewBag.Accesos)
+            {
+                if (accesoItem.Tipo == "Mantenedores") {
+                    <li><a class="click" asp-area="" asp-controller="@accesoItem.Tipo" asp-action="@accesoItem.Nombre" data-url="@accesoItem.Tipo" data-valor="@accesoItem.Nombre">@accesoItem.Nombre</a></li>
+                }
+            }
+        </ul>
+    </li>
+    <li class="xn-openable">
+        <a href="#"><span class="fa fa-files-o"></span> <span class="xn-text">Administrativo</span></a>
+        <ul>
+            @foreach (var accesoItem in ViewBag.Accesos)
+            {
+                if (accesoItem.Tipo == "Administrativo") {
+                    <li><a class="click" asp-area="" asp-controller="@accesoItem.Tipo" asp-action="@accesoItem.Nombre" data-url="@accesoItem.Tipo" data-valor="@accesoItem.Nombre">@accesoItem.Nombre</a></li>
+                }
+            }
+        </ul>
+    </li>
+    <li class="xn-openable">
+        <a href="#"><span class="fa fa-file-text-o"></span> <span class="xn-text">Tesoreria</span></a>
+        <ul>
+            @foreach (var accesoItem in ViewBag.Accesos)
+            {
+                if (accesoItem.Tipo == "Tesoreria") {
+                    <li><a class="click" asp-area="" asp-controller="@accesoItem.Tipo" asp-action="@accesoItem.Nombre" data-url="@accesoItem.Tipo" data-valor="@accesoItem.Nombre">@accesoItem.Nombre</a></li>
+                }
+            }
+        </ul>        
+    </li>
+    }
+</ul>
+
+<script>
+    $(function () {
+        $(".click").click(function (e) {
+            e.preventDefault();
+
+            var tipo = $(this).attr("data-url");
+            var modulo = $(this).attr("data-valor");
+            //alert(tipo + "/" + modulo);
+
+            if (tipo == "Mantenedores") {
+                location.href = "/Mantenedores/" + modulo
+            }
+        });
+    });
+</script>
+

@@ -1,0 +1,244 @@
+﻿@{
+    @using Microsoft.AspNetCore.Http;
+    ViewData["Title"] = "Mantenedores Page";
+    string sessionName = Context.Session.GetString("_Login");
+
+}
+
+<!-- START BREADCRUMB -->
+<ul class="breadcrumb">
+    <li><a href="#">Mantenedores</a></li>
+    <li class="active">Tipos Movimiento</li>
+</ul>
+<!-- END BREADCRUMB -->
+
+<!-- PAGE TITLE -->
+<div class="page-title">
+    <h2><span class="fa fa-arrow-circle-o-left"></span> Series</h2>
+    <div class="pull-right push-down-20">
+        <button class="btn btn-primary btn-modal pull-right hidden-mobile" data-toggle="modal" data-target="#Nuevo">Nuevo</button>
+    </div>
+</div>
+<!-- END PAGE TITLE -->
+
+<!-- PAGE CONTENT WRAPPER -->
+<div class="page-content-wrap">
+    <div class="row">
+        <div class="col-md-12">
+
+            <!-- START DEFAULT DATATABLE -->
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <div class="table-responsive">
+                        <table class="table datatable">
+                            <thead>
+                                <tr>
+                                    <th>Id</th>
+                                    <th>Descripción</th>
+                                    <th>Monto</th>
+                                    <th>Partidos Suspención</th>
+                                    <th>Editar</th>
+                                    <th>Quitar</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (ViewBag.TiposMovimiento != null) {
+                                    @foreach (var item in ViewBag.TiposMovimiento)
+                                    {
+                                    <tr>
+                                        <td>@item.IdTipoMovimiento</td>
+                                        <td>@item.Descripcion</td>
+                                        <td>@item.Monto</td>
+                                        <td>@item.PartidosSuspencion</td>
+                                        <td><button class="btn btn-sm btn-twitter btn-modal hidden-mobile" data-toggle="modal" data-target="#Editar-@item.IdTipoMovimiento"><span class="glyphicon glyphicon-edit"></span></button></td>
+                                        <td><button class="btn btn-sm btn-inverse btn-modal hidden-mobile" onclick="EliminarSerie(@item.IdTipoMovimiento, '@item.Descripcion')"><span class="glyphicon glyphicon-trash"></span></button></td>
+                                    </tr>
+                                    }
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <!-- END DEFAULT DATATABLE -->
+
+            @* -- Modal Editar/Eliminar -- *@
+            @if (ViewBag.TiposMovimiento != null) {
+                @foreach (var item in ViewBag.TiposMovimiento)
+                {
+                    <div class="modal" id="Editar-@item.IdTipoMovimiento" tabindex="-1" role="dialog" aria-labelledby="largeModalHead" aria-hidden="true">
+                        <div class="modal-dialog modal-lg" style="z-index: 999999999;">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                                    <h4 class="modal-title text-uppercase" id="largeModalHead">editar Tipo Movimiento</h4>
+                                </div>
+                                <div class="modal-body" id="serie-@item.IdTipoMovimiento" style="height:350px; overflow-x:auto;">
+                                    <div class="row">
+                                        <form id="Form_@item.IdTipoMovimiento" class="form-horizontal">
+
+                                            <input id="IdTipoMovimiento" name="IdTipoMovimiento" type="hidden" value="@item.IdTipoMovimiento" />
+                                            <input id="UsuarioElimina" name="UsuarioElimina" type="hidden" />
+                                            <input id="FechaElimina" name="FechaElimina" type="hidden" />
+
+                                            <div class="col-md-12 col-sm-12 col-xs-7">
+                                                <div class="panel-body">
+                                                    <h3><span class="fa fa-pencil"></span> Información</h3>
+                                                    <p>Puede editar los actuales <strong>tipo de movimiento</strong> del sistema, actualice si desea y luego presione el botón 'Guardar'</p>
+                                                </div>
+                                                <div class="panel panel-default">
+                                                    <div class="panel-body form-group-separated">
+                                                        <div class="form-group">
+                                                            <label class="col-md-3 col-xs-5 control-label">Descripción</label>
+                                                            <div class="col-md-9 col-xs-7">
+                                                                <input type="text" class="form-control" name="Descripcion" id="Descripcion" value="@item.Descripcion" maxlength="120" placeholder="Descripción">
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label class="col-md-3 col-xs-5 control-label">Monto</label>
+                                                            <div class="col-md-9 col-xs-7">
+                                                                <input type="text" class="form-control" name="Monto" id="Monto" value="@item.Monto" maxlength="120" placeholder="Monto">
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label class="col-md-3 col-xs-5 control-label">Partidos Suspención</label>
+                                                            <div class="col-md-9 col-xs-7">
+                                                                <input type="text" class="form-control" name="PartidosSuspencion" id="PartidosSuspencion" value="@item.PartidosSuspencion" maxlength="120" placeholder="Partidos Suspención">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <button class="btn btn-primary" type="button" id="guardar_@item.IdTipoMovimiento" onclick="Grabar(@item.IdTipoMovimiento)">Guardar</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+            @* -- Fin modal Editar/Eliminar --*@
+
+            @* -- Modal Nuevo --*@
+            <div class="modal" id="Nuevo" tabindex="-1" role="dialog" aria-labelledby="largeModalHead" aria-hidden="true">
+                <div class="modal-dialog modal-lg" style="z-index: 999999999;">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                            <h4 class="modal-title text-uppercase" id="largeModalHead">nuevo Tipo Movimiento</h4>
+                        </div>
+                        <div class="modal-body" id="serie-0" style="height:350px; overflow-x:auto;">
+                            <div class="row">
+                                <form id="Form_0" class="form-horizontal">
+                                    <input id="UsuarioCrea" name="UsuarioCrea" type="hidden" />
+                                    <input id="FechaCrea" name="FechaCrea" type="hidden" />
+
+                                    <div class="col-md-12 col-sm-12 col-xs-7">
+                                        <div class="panel panel-default">
+                                            <div class="panel-body">
+                                                <h3><span class="fa fa-pencil"></span> Información</h3>
+                                                <p>Ingrese los datos del nuevo <strong>Tipo de Movimiento</strong> y luego presione el botón 'Guardar'</p>
+                                            </div>
+                                            <div class="panel-body form-group-separated">
+                                                <div class="form-group">
+                                                    <label class="col-md-3 col-xs-5 control-label">Descripción</label>
+                                                    <div class="col-md-9 col-xs-7">
+                                                        <input type="text" class="form-control" name="Descripcion" id="Descripcion" maxlength="120" placeholder="Descripción">
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-3 col-xs-5 control-label">Monto</label>
+                                                    <div class="col-md-9 col-xs-7">
+                                                        <input type="text" class="form-control" name="Monto" id="Monto" maxlength="120" placeholder="Monto">
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-3 col-xs-5 control-label">Partidos Suspención</label>
+                                                    <div class="col-md-9 col-xs-7">
+                                                        <input type="text" class="form-control" name="PartidosSuspencion" id="PartidosSuspencion" maxlength="120" placeholder="Partidos Suspención">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <button class="btn btn-primary" type="button" id="guardar-nueva" onclick="Grabar(0)">Guardar</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @* -- Fin modal Nuevo --*@
+
+        </div>
+    </div>
+
+</div>
+<!-- PAGE CONTENT WRAPPER -->
+
+<script>
+
+    function Grabar(id) {
+        if (id == 0) {
+            var usuariocrea = "@sessionName";
+            var form = document.getElementById("Form_" + id);
+            form.UsuarioCrea.value = usuariocrea;
+            form.FechaCrea.value = "@DateTime.Now";
+        }
+
+        var formData = new FormData(document.getElementById("Form_" + id));
+        formData.append("dato", "valor");
+        $.ajax({
+            url: '/Mantenedores/GrabarTipoMovimiento',
+            type: 'Post',
+            dataType: "html",
+            data: formData,
+            cache: false,
+            contentType: false,
+            processData: false,
+            error: function (ex) {
+                myalert("Ups!", ex.responseText);
+            },
+            success: function (response) {
+                var datos = response.split(',');
+                var titulo = datos[0];
+                var mensaje = datos[1];
+
+                if (mensaje != "ok") {
+                    myalert(titulo, mensaje);
+                } else {
+                    myalert(titulo, 'El Tipo de Movimiento fue grabado exitosamente.');
+                    window.location.href = "/Mantenedores/TiposMovimiento";
+                }
+            }
+        });
+    }
+
+    function EliminarSerie(id, descripcion) {
+        var mensaje = "¿Esta seguro(a) que desea elminar el Tipo Movimiento:\n " +
+            "'" + descripcion + "' ?"
+
+        var r = myconfirm("Confirmar", mensaje).then(function () {
+            var uname = "@sessionName";
+            var form = document.getElementById("Form_" + id);
+            form.UsuarioElimina.value = uname;
+            form.FechaElimina.value = "@DateTime.Now";
+            Grabar(id);
+        }, function () {
+            window.location.href = "/Mantenedores/TiposMovimiento";
+        });
+    };
+</script>

@@ -1,0 +1,432 @@
+﻿@{
+    @using Microsoft.AspNetCore.Http;
+    ViewData["Title"] = "Mantenedores Page";
+    string sessionName = Context.Session.GetString("_Login");
+}
+
+<!-- START BREADCRUMB -->
+<ul class="breadcrumb">
+    <li><a href="#">Administrativo</a></li>
+    <li class="active">Ingreso de fecha jugada</li>
+</ul>
+<!-- END BREADCRUMB -->
+
+<!-- PAGE TITLE -->
+<div class="page-title">
+    <h2><span class="fa fa-arrow-circle-o-left"></span> Ingreso de fecha jugada</h2>
+    <div class="pull-right push-down-20">
+        <button class="btn btn-primary btn-modal pull-right hidden-mobile" data-toggle="modal" data-target="#Nuevo">Nuevo</button>
+    </div>
+</div>
+<!-- END PAGE TITLE -->
+
+<!-- PAGE CONTENT WRAPPER -->
+<div class="page-content-wrap">
+    <div class="row">
+
+        <div class="col-md-12">
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <h3><span class="fa fa-futbol-o"></span> Seleccione campeonato</h3>
+                    <div class="form-group">
+                        <div class="col-md-6">
+                            <select class="form-control select" data-style="btn-success" data-live-search="true" name="campeonato" id="campeonato">
+                                @foreach (var campeonatoItem in ViewBag.Campeonatos)
+                                {
+                                <option value="@campeonatoItem.Id">@campeonatoItem.NombreCampeonato - Inicio: @campeonatoItem.FechaInicio.ToString("dd-MM-yyyy") Término: @campeonatoItem.FechaTermino.ToString("dd-MM-yyyy")</option>
+                                }
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- START DEFAULT DATATABLE -->
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <div class="table-responsive">
+                    <table class="table datatable">
+                        <thead>
+                            <tr>
+                                <th>Folio</th>
+                                <th>Club</th>
+                                <th>Jugador</th>
+                                <th>Jugó</th>
+                                <th>Goles</th>
+                                <th>Expulsado</th>
+                                <th>Lesionado</th>
+                                <th>Ingresar</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        @if (ViewBag.Fichas != null) {
+                            @foreach (var item in ViewBag.Fichas)
+                            {
+                            <tr>
+                                <td>@item.Id</td>
+                                @if (ViewBag.Clubes != null) {
+                                    @foreach (var clubItem in ViewBag.Clubes)
+                                    {
+                                        if (item.ClubId == clubItem.IdClub) {
+                                            <td>@clubItem.Nombre</td>
+                                        }
+                                    }
+                                } else {
+                                    <td></td>
+                                }
+                                @if (ViewBag.Jugadores != null) {
+                                    @foreach (var jugadorItem in ViewBag.Jugadores)
+                                    {
+                                        if (item.JugadorId == jugadorItem.IdJugador) {
+                                            <td>@jugadorItem.Nombres @jugadorItem.Apellidos</td>
+                                        }
+                                    }
+                                } else {
+                                    <td></td>
+                                }
+                                @if (item.Jugo == 1) {
+                                    <td>Sí</td>
+                                } else {
+                                    <td>No</td>
+                                }
+                                <td>@item.Goles</td>
+                                @if (item.Expulsado == 1) {
+                                    <td>Sí</td>
+                                } else {
+                                    <td>No</td>
+                                }
+                                @if (item.Lesionado == 1) {
+                                    <td>Sí</td>
+                                } else {
+                                    <td>No</td>
+                                }
+                                <td><button class="btn btn-sm btn-twitter btn-modal" data-toggle="modal" data-target="#Editar-@item.Id"><span class="glyphicon glyphicon-edit"></span></button></td>
+                            </tr>
+                            }
+                        }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <!-- END DEFAULT DATATABLE -->
+        
+    </div>
+
+</div>
+<!-- PAGE CONTENT WRAPPER -->
+
+@* -- Modal Editar/Eliminar -- *@
+@if (ViewBag.Fichas != null) {
+    @foreach (var item in ViewBag.Fichas)
+    {
+        <div class="modal" id="Editar-@item.Id" tabindex="-1" role="dialog" aria-labelledby="largeModalHead" aria-hidden="true">
+            <div class="modal-dialog modal-lg" style="z-index: 999999999;">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                        <h4 class="modal-title text-uppercase" id="largeModalHead">ficha jugador</h4>
+                    </div>
+                    <div class="modal-body" id="fecha-@item.Id" style="height:480px; overflow-x:auto;">
+                        <div class="row">
+
+                            <form id="Form_@item.Id" class="form-horizontal">
+
+                                <input id="Folio" name="Folio" type="hidden" value="@item.Id" />
+                                <input id="UsuarioCrea" name="UsuarioCrea" type="hidden" />
+                                <input id="FechaCrea" name="FechaCrea" type="hidden" />
+                                <input id="CampeonatoId" name="CampeonatoId" type="hidden" />
+
+                                <div class="col-md-12 col-sm-12 col-xs-7">
+                                    <div class="panel-body">
+                                        <h3><span class="fa fa-pencil"></span> Información</h3>
+                                    </div>
+                                    <div class="panel panel-default">
+                                        <div class="panel-body form-group-separated">
+                                            <div class="form-group">
+                                                <label class="col-md-3 control-label">Club  </label>
+                                                <div class="col-md-9">
+                                                    <select class="form-control" data-live-search="true" name="ClubId" id="ClubId">
+                                                        @foreach (var clubesItem in ViewBag.Clubes)
+                                                        {
+                                                            if (item.ClubId == @clubesItem.IdClub) {
+                                                                <option selected value="@clubesItem.IdClub">@clubesItem.Nombre</option>
+                                                            } else {
+                                                                <option value="@clubesItem.IdClub">@clubesItem.Nombre</option>
+                                                            }
+                                                        }
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="col-md-3 control-label">Jugador</label>
+                                                <div class="col-md-9">
+                                                    <select class="form-control" data-live-search="true" name="JugadorId" id="JugadorId">
+                                                        @foreach (var jugadoresItem in ViewBag.Jugadores)
+                                                        {
+                                                            if (item.JugadorId == @jugadoresItem.IdJugador) {
+                                                                <option selected value="@jugadoresItem.IdJugador">@jugadoresItem.Nombres @jugadoresItem.Apellidos</option>
+                                                            } else {
+                                                                <option value="@jugadoresItem.IdJugador">@jugadoresItem.Nombres @jugadoresItem.Apellidos</option>
+                                                            }
+                                                        }
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="col-md-3 col-xs-5 control-label">Jugó?</label>
+                                                <div class="col-md-9 col-xs-7">
+                                                    <select class="form-control select" data-style="btn-success" name="Jugo" id="Jugo">
+                                                        @if (item.Jugo == 1) { 
+                                                            <option selected value="1">Si</option>
+                                                            <option value="0">No</option>
+                                                        } else {
+                                                            <option value="1">Si</option>
+                                                            <option selected value="0">No</option>
+                                                        }
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="col-md-3 col-xs-5 control-label">Goles</label>
+                                                <div class="col-md-9 col-xs-7">
+                                                    <input type="text" class="form-control" name="Goles" id="Goles" maxlength="30" placeholder="Goles" value="@item.Goles">
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="col-md-3 col-xs-5 control-label">Expulsado?</label>
+                                                <div class="col-md-9 col-xs-7">
+                                                    <select class="form-control select" data-style="btn-success" name="Expulsado" id="Expulsado">
+                                                        @if (item.Expulsado == 1) {
+                                                            <option value="0">No</option>
+                                                            <option selected value="1">Si</option>
+                                                        } else {
+                                                            <option selected value="0">No</option>
+                                                            <option value="1">Si</option>
+                                                        }
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label class="col-md-3 col-xs-5 control-label">Lesionado?</label>
+                                                <div class="col-md-9 col-xs-7">
+                                                    <select class="form-control select" data-style="btn-success" name="Lesionado" id="Lesionado">
+                                                        @if (item.Lesionado == 1) {
+                                                            <option value="0">No</option>
+                                                            <option selected value="1">Si</option>
+                                                        } else {
+                                                            <option selected value="0">No</option>
+                                                            <option value="1">Si</option>
+                                                        }
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <button class="btn btn-primary" type="button" id="guardar_@item.Id" onclick="Grabar(@item.Id)">Guardar</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+}
+@* -- Fin modal Editar/Eliminar --*@
+
+@* -- Modal Nuevo -- *@
+<div class="modal" id="Nuevo" tabindex="-1" role="dialog" aria-labelledby="largeModalHead" aria-hidden="true">
+    <div class="modal-dialog modal-lg" style="z-index: 999999999;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title text-uppercase" id="largeModalHead">Ingreso fecha</h4>
+            </div>
+            <div class="modal-body" id="fecha" style="height:480px; overflow-x:auto;">
+                <div class="row">
+
+                    <form id="Form_0" class="form-horizontal">
+
+                        <input id="Folio" name="Folio" type="hidden" value="0" />
+                        <input id="UsuarioCrea" name="UsuarioCrea" type="hidden" />
+                        <input id="FechaCrea" name="FechaCrea" type="hidden" />
+                        <input id="CampeonatoId" name="CampeonatoId" type="hidden" />
+
+                        <div class="col-md-12 col-sm-12 col-xs-7">
+                            <div class="panel-body">
+                                <h3><span class="fa fa-pencil"></span> Información</h3>
+                            </div>
+                            <div class="panel panel-default">
+                                <div class="panel-body form-group-separated">
+                                    <div class="form-group">
+                                        <label class="col-md-3 control-label">Club  </label>
+                                        <div class="col-md-9">
+                                            <select class="form-control" data-live-search="true" name="ClubId" id="ClubId">
+                                                @foreach (var clubesItem in ViewBag.Clubes)
+                                                {
+                                                    <option codigo="@clubesItem.IdClub" value="@clubesItem.IdClub">@clubesItem.Nombre</option>
+                                                }
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-md-3 control-label">Jugador</label>
+                                        <div class="col-md-9">
+                                            <select class="form-control" data-live-search="true" name="JugadorId" id="JugadorId">
+                                                @foreach (var jugadoresItem in ViewBag.Jugadores)
+                                                {
+                                                    <option codigo="@jugadoresItem.ClubId" value="@jugadoresItem.IdJugador">@jugadoresItem.Nombres @jugadoresItem.Apellidos</option>
+                                                }
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-md-3 col-xs-5 control-label">Jugó?</label>
+                                        <div class="col-md-9 col-xs-7">
+                                            <select class="form-control select" data-style="btn-success" name="Jugo" id="Jugo">
+                                                <option value="1">Si</option>
+                                                <option value="0">No</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-md-3 col-xs-5 control-label">Goles</label>
+                                        <div class="col-md-9 col-xs-7">
+                                            <input type="text" class="form-control" name="Goles" id="Goles" maxlength="30" placeholder="Goles">
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-md-3 col-xs-5 control-label">Expulsado?</label>
+                                        <div class="col-md-9 col-xs-7">
+                                            <select class="form-control select" data-style="btn-success" name="Expulsado" id="Expulsado">
+                                                <option value="0">No</option>
+                                                <option value="1">Si</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="col-md-3 col-xs-5 control-label">Lesionado?</label>
+                                        <div class="col-md-9 col-xs-7">
+                                            <select class="form-control select" data-style="btn-success" name="Lesionado" id="Lesionado">
+                                                <option value="0">No</option>
+                                                <option value="1">Si</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div class="row">
+                    <div class="col-md-12">
+                        <button class="btn btn-primary" type="button" id="guardar" onclick="Grabar(0)">Guardar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@* -- Fin modal Editar/Eliminar --*@
+
+<script>
+    // Consigue el elemento provincias/poblaciones por su identificador id. Es un método del DOM de HTML
+    var id1 = document.getElementById("ClubId");
+    var id2 = document.getElementById("JugadorId");
+
+    // Añade un evento change al elemento id1, asociado a la función cambiar()
+    if (id1.addEventListener) {     // Para la mayoría de los navegadores, excepto IE 8 y anteriores
+        id1.addEventListener("change", cambiar);
+    } else if (id1.attachEvent) {   // Para IE 8 y anteriores
+        id1.attachEvent("change", cambiar); // attachEvent() es el método equivalente a addEventListener()
+    }
+
+    // Definición de la función cambiar()
+    function cambiar() {
+        for (var i = 0; i < id2.options.length; i++)
+
+            // -- Inicio del comentario -- 
+            // Muestra solamente los id2 que sean iguales a los id1 seleccionados, según la propiedad display
+            //alert('Jugador: ' + id2.options[i].getAttribute("codigo"));
+            //alert('Club: ' + id1.options[id1.selectedIndex].getAttribute("codigo"));
+            if (id2.options[i].getAttribute("codigo") == id1.options[id1.selectedIndex].getAttribute("codigo")) {
+                id2.options[i].style.display = "block";
+            } else {
+                id2.options[i].style.display = "none";
+            }
+        // -- Fin del comentario --
+
+        id2.value = "";
+    }
+
+    // Llamada a la función cambiar()
+    cambiar();
+
+    function Grabar(id) {
+        if (id == 0) {
+            var UsuarioCrea = "@sessionName";
+            var form = document.getElementById("Form_" + id);
+            form.UsuarioCrea.value = UsuarioCrea;
+            form.FechaCrea.value = "@DateTime.Now";
+            form.CampeonatoId.value = document.getElementById("campeonato").value;
+        }
+
+        var form = document.getElementById("Form_" + id);
+        form.CampeonatoId.value = document.getElementById("campeonato").value;
+        alert(form.CampeonatoId.value);
+        var formData = new FormData(document.getElementById("Form_" + id));
+        formData.append("dato", "valor");
+        $.ajax({
+            url: '/Administrativo/GrabarIngresoFicha',
+            type: 'Post',
+            dataType: "html",
+            data: formData,
+            cache: false,
+            contentType: false,
+            processData: false,
+            error: function (ex) {
+                myalert("Ups!", ex.responseText);
+            },
+            success: function (response) {
+                var datos = response.split(',');
+                var titulo = datos[0];
+                var mensaje = datos[1];
+
+                if (mensaje != "ok") {
+                    myalert(titulo, mensaje);
+                } else {
+                    myalert(titulo, 'El ingreso de la ficha fue grabado exitosamente.');
+                    window.location.href = "/Administrativo/IngresoFicha";
+                }
+            }
+        });
+    }
+
+    function EliminarAcceso(id, descripcion) {
+        var mensaje = "¿Esta seguro(a) que desea elminar el acceso:\n " +
+            "'" + descripcion + "' ?"
+
+        var r = myconfirm("Confirmar", mensaje).then(function () {
+            var uname = "@sessionName";
+            var form = document.getElementById("Form_" + id);
+            form.UsuarioDenega.value = uname;
+            form.FechaDenega.value = "@DateTime.Now";
+            Grabar(id);
+        }, function () {
+            window.location.href = "/Mantenedores/Accesos";
+        });
+    };
+</script>

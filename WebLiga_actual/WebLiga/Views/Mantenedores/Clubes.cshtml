@@ -1,0 +1,409 @@
+﻿@{
+    @using Microsoft.AspNetCore.Http;
+    ViewData["Title"] = "Mantenedores Page";
+    string sessionName = Context.Session.GetString("_Login");
+    string ruta = string.Empty;
+    string tipoArchivo = string.Empty;
+
+}
+
+<!-- START BREADCRUMB -->
+<ul class="breadcrumb">
+    <li><a href="#">Mantenedores</a></li>
+    <li class="active">Clubes</li>
+</ul>
+<!-- END BREADCRUMB -->
+
+<!-- PAGE TITLE -->
+<div class="page-title">
+    <h2><span class="fa fa-arrow-circle-o-left"></span> Clubes</h2>
+    <div class="pull-right push-down-20">
+        <button class="btn btn-primary btn-modal pull-right hidden-mobile" data-toggle="modal" data-target="#Nuevo">Nuevo</button>
+    </div>
+</div>
+<!-- END PAGE TITLE -->
+
+<!-- PAGE CONTENT WRAPPER -->
+<div class="page-content-wrap">
+    <div class="row">
+        <div class="col-md-12">
+
+            <!-- START DEFAULT DATATABLE -->
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <div class="table-responsive">
+                        <table class="table datatable">
+                            <thead>
+                                <tr>
+                                    <th>Rut</th>
+                                    <th>Nombre</th>
+                                    <th>Direccion</th>
+                                    <th>Telefono</th>
+                                    <th>Logo</th>
+                                    <th>Editar</th>
+                                    <th>Quitar</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            @if (ViewBag.Clubes != null) {
+                                @foreach (var item in ViewBag.Clubes)
+                                {
+                                    <tr>
+                                        <td>@item.Rut</td>
+                                        <td>@item.Nombre</td>
+                                        <td>@item.Direccion</td>
+                                        <td>@item.Telefono</td>
+                                        @if (string.IsNullOrEmpty(item.Logo)) {
+                                            <td><img src="~/assets/images/users/no-image.jpg" alt="unknow" height="32" width="32" /></td>
+                                        } else {
+                                            <td><img src="@item.Logo" alt="@item.Nombre" height="32" width="32"></td>
+                                        }
+                                        <td><button class="btn btn-sm btn-twitter btn-modal hidden-mobile" data-toggle="modal" data-target="#Editar-@item.IdClub"><span class="glyphicon glyphicon-edit"></span></button></td>
+                                        <td><button class="btn btn-sm btn-inverse btn-modal hidden-mobile" onclick="EliminarClub(@item.IdClub, '@item.Nombre')"><span class="glyphicon glyphicon-trash"></span></button></td>
+                                    </tr>
+                                }
+                            }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <!-- END DEFAULT DATATABLE -->
+
+            @* -- Modal Editar/Eliminar -- *@
+            @if (ViewBag.Clubes != null)
+            {
+                @foreach (var item in ViewBag.Clubes)
+                {
+                    <div class="modal" id="Editar-@item.IdClub" tabindex="-1" role="dialog" aria-labelledby="largeModalHead" aria-hidden="true">
+                        <div class="modal-dialog modal-lg" style="z-index: 999999999;">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                                    <h4 class="modal-title text-uppercase" id="largeModalHead">editar club</h4>
+                                </div>
+                                <div class="modal-body" id="club-@item.IdClub" style="height:430px; overflow-x:auto;">
+                                    <div class="row">
+                                        <form id="Form_@item.IdClub" class="form-horizontal">
+
+                                            <input id="IdClub" name="IdClub" type="hidden" value="@item.IdClub" />
+                                            <input id="UsuarioElimina" name="UsuarioElimina" type="hidden" />
+                                            <input id="FechaElimina" name="FechaElimina" type="hidden" />
+
+                                            <div class="col-md-4 col-sm-4 col-xs-5">
+                                                <div class="panel panel-default">
+                                                    <div class="panel-body">
+                                                        <h3><span class="fa fa-user"></span> @item.Nombre</h3>
+                                                        <p>Teléfono - @item.Telefono</p>
+                                                        <div class="text-center" id="user_image">
+                                                            @if (string.IsNullOrEmpty(item.Logo)) {
+                                                                <img id="imgSalida" src="~/assets/images/users/no-image.jpg" alt="unknow" />                                                                
+                                                            } else {
+                                                                <img id="imgSalida" src="@item.Logo" alt="@item.Nombre" class="img-thumbnail" height="100" width="200">                                                                
+                                                            }
+                                                        </div>
+                                                    </div>
+                                                    <div class="panel-body form-group-separated">
+                                                        <div class="form-group">
+                                                            <div class="col-md-12 col-xs-12">
+                                                                <input type="file" class="fileinput btn btn-primary btn-block btn-rounded" name="files" id="files" title="Cambiar logo" onChange="readURL(this);"/>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-8 col-sm-8 col-xs-7">
+                                                <div class="panel panel-default">
+                                                    <div class="panel-body">
+                                                        <h3><span class="fa fa-pencil"></span> Información</h3>
+                                                        <p>A continuación los datos del club <strong>@item.Nombre</strong>, actualice si desea y luego presione el botón 'Guardar'</p>
+                                                    </div>
+                                                    <div class="panel-body form-group-separated">
+                                                        <div class="form-group">
+                                                            <label class="col-md-3 col-xs-5 control-label">Rut</label>
+                                                            <div class="col-md-9 col-xs-7">
+                                                                <input type="text" class="form-control" name="Rut" id="Rut" value="@item.Rut" maxlength="120" placeholder="Rut">
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label class="col-md-3 col-xs-5 control-label">Nombre</label>
+                                                            <div class="col-md-9 col-xs-7">
+                                                                <input type="text" class="form-control" name="Nombre" id="Nombre" value="@item.Nombre" maxlength="120" placeholder="Nombre">
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label class="col-md-3 col-xs-5 control-label">Dirección</label>
+                                                            <div class="col-md-9 col-xs-7">
+                                                                <input type="text" class="form-control" name="Direccion" id="Direccion" value="@item.Direccion" placeholder="Dirección">
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label class="col-md-3 col-xs-5 control-label">Teléfono</label>
+                                                            <div class="col-md-9 col-xs-7">
+                                                                <input type="text" class="form-control" name="Telefono" id="Telefono" value="@item.Telefono" placeholder="Teléfono">
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label class="col-md-3 col-xs-5 control-label">E-mail</label>
+                                                            <div class="col-md-9 col-xs-7">
+                                                                <input type="text" class="form-control" name="Email" id="Email" value="@item.Email" placeholder="E-mail">
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label class="col-md-3 col-xs-5 control-label">N° Pers. Jurídica</label>
+                                                            <div class="col-md-9 col-xs-7">
+                                                                <input type="text" class="form-control" name="NumeroPersonalidadJuridica" id="NumeroPersonalidadJuridica" value="@item.NumeroPersonalidadJuridica" placeholder="N° Personalidad Jurídica">
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label class="col-md-3 col-xs-5 control-label">N° Reg. Civil</label>
+                                                            <div class="col-md-9 col-xs-7">
+                                                                <input type="text" class="form-control" name="NumeroRegistroCivil" id="NumeroRegistroCivil" value="@item.NumeroRegistroCivil" placeholder="N° Registro Civil">
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label class="col-md-3 col-xs-5 control-label">Directiva</label>
+                                                            <div class="col-md-9 col-xs-7">
+                                                                <select class="form-control select" data-style="btn-success" name="DirectivaId" id="DirectivaId">
+                                                                    @foreach (var directivaItem in ViewBag.Directivas)
+                                                                    {
+                                                                        @if (item.DirectivaId == directivaItem.IdDirectiva) {
+                                                                            <option value="@directivaItem.IdDirectiva" selected>@directivaItem.Descripcion</option>
+                                                                        } else {
+                                                                            <option value="@directivaItem.IdDirectiva">@directivaItem.Descripcion</option>
+                                                                        }
+                                                                    }
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <button class="btn btn-primary" type="button" id="guardar_@item.IdClub" onclick="Grabar(@item.IdClub)">Guardar</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+            @* -- Fin modal Editar/Eliminar --*@
+
+            @* -- Modal Nuevo --*@
+            <div class="modal" id="Nuevo" tabindex="-1" role="dialog" aria-labelledby="largeModalHead" aria-hidden="true">
+                <div class="modal-dialog modal-lg" style="z-index: 999999999;">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                            <h4 class="modal-title text-uppercase" id="largeModalHead">nuevo club</h4>
+                        </div>
+                        <div class="modal-body" id="club-0" style="height:400px; overflow-x:auto;">
+                            <div class="row">
+                                <form id="Form_0" class="form-horizontal">
+                                    <input id="UsuarioCrea" name="UsuarioCrea" type="hidden" />
+                                    <input id="FechaCrea" name="FechaCrea" type="hidden" />
+
+                                    <div class="col-md-4 col-sm-4 col-xs-5">
+                                        <div class="panel panel-default">
+                                            <div class="panel-body">
+                                                <h3><span class="fa fa-user"></span> Nombre del Club</h3>
+                                                <p>Teléfono del club</p>
+                                                <div class="text-center" id="user_image">
+                                                    <img src="~/assets/images/users/no-image.jpg" alt="unknow" />
+                                                </div>
+                                            </div>
+                                            <div class="panel-body form-group-separated">
+                                                <div class="form-group">
+                                                    <div class="col-md-12 col-xs-12">
+                                                        <input type="file" class="fileinput btn btn-primary btn-block btn-rounded" name="files" id="files" title="Seleccionar logo" onchange="preview(this)"/>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-8 col-sm-8 col-xs-7">
+                                        <div class="panel panel-default">
+                                            <div class="panel-body">
+                                                <h3><span class="fa fa-pencil"></span> Información</h3>
+                                                <p>A continuación los datos del club <strong>Nombre del Club</strong>, actualice si desea y luego presione el botón 'Guardar'</p>
+                                            </div>
+                                            <div class="panel-body form-group-separated">
+                                                <div class="form-group">
+                                                    <label class="col-md-3 col-xs-5 control-label">Rut</label>
+                                                    <div class="col-md-9 col-xs-7">
+                                                        <input type="text" class="form-control" name="Rut" id="Rut" maxlength="120" placeholder="Rut">
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-3 col-xs-5 control-label">Nombre</label>
+                                                    <div class="col-md-9 col-xs-7">
+                                                        <input type="text" class="form-control" name="Nombre" id="Nombre" maxlength="120" placeholder="Nombre">
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-3 col-xs-5 control-label">Dirección</label>
+                                                    <div class="col-md-9 col-xs-7">
+                                                        <input type="text" class="form-control" name="Direccion" id="Direccion" placeholder="Dirección">
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-3 col-xs-5 control-label">Teléfono</label>
+                                                    <div class="col-md-9 col-xs-7">
+                                                        <input type="text" class="form-control" name="Telefono" id="Telefono" placeholder="Teléfono">
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-3 col-xs-5 control-label">E-mail</label>
+                                                    <div class="col-md-9 col-xs-7">
+                                                        <input type="text" class="form-control" name="Email" id="Email" placeholder="E-mail">
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-3 col-xs-5 control-label">N° Pers. Jurídica</label>
+                                                    <div class="col-md-9 col-xs-7">
+                                                        <input type="text" class="form-control" name="NumeroPersonalidadJuridica" id="NumeroPersonalidadJuridica" placeholder="N° Personalidad Jurídica">
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-3 col-xs-5 control-label">N° Reg. Civil</label>
+                                                    <div class="col-md-9 col-xs-7">
+                                                        <input type="text" class="form-control" name="NumeroRegistroCivil" id="NumeroRegistroCivil" placeholder="N° Registro Civil">
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-3 col-xs-5 control-label">Directiva</label>
+                                                    <div class="col-md-9 col-xs-7">
+                                                        <select class="form-control select" data-style="btn-success" name="DirectivaId" id="DirectivaId">
+                                                            @foreach (var directivaItem in ViewBag.Directivas)
+                                                            {
+                                                                <option value="@directivaItem.IdDirectiva">@directivaItem.Descripcion</option>
+                                                            }
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <button class="btn btn-primary" type="button" id="guardar-nuevo" onclick="Grabar(0)">Guardar</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @* -- Fin modal Nuevo --*@
+
+        </div>
+    </div>
+
+</div>
+<!-- PAGE CONTENT WRAPPER -->
+
+<script>
+
+    function readURL(input) {
+        var ext = input.files[0]['name'].substring(input.files[0]['name'].lastIndexOf('.') + 1).toLowerCase();
+        if (input.files && input.files[0] && (ext == "gif" || ext == "png" || ext == "jpeg" || ext == "jpg")) {
+            var reader = new FileReader();
+            reader.onload = function (e) {
+                alert(e.target.result);
+                $('#imgSalida').attr('src', e.target.result);
+            }
+
+            reader.readAsDataURL(input.files[0]);
+        } else {
+            $('#imgSalida').attr('src', '~/assets/images/users/no-image.jpg');
+        }
+    }
+
+
+    //function preview() {
+    //    addImage();
+
+    //    function addImage() {
+    //        var fileToRead = document.getElementById("files");
+
+    //        alert(fileToRead);
+
+    //        var file = fileToRead.files[0], imageType = /image.*/;
+
+    //        alert(file);
+
+    //        if (!file.type.match(imageType))
+    //            return;
+
+    //        var reader = new FileReader();
+    //        reader.onload = fileOnload;
+    //        reader.readAsDataURL(file);
+    //    }
+
+    //    function fileOnload(e) {
+    //        var result = e.target.result;
+    //        $('#imgSalida').attr("src", result);
+    //    }
+    //}
+
+    function Grabar(id) {
+        if (id == 0) {
+            var usuariocrea = "@sessionName";
+            var form = document.getElementById("Form_" + id);
+            form.UsuarioCrea.value = usuariocrea;
+            form.FechaCrea.value = "@DateTime.Now";
+        }
+
+        var formData = new FormData(document.getElementById("Form_" + id));
+        formData.append("dato", "valor");
+        $.ajax({
+            url: '/Mantenedores/GrabarClubes',
+            type: 'Post',
+            dataType: "html",
+            data: formData,
+            cache: false,
+            contentType: false,
+            processData: false,
+            error: function (ex) {
+                myalert("Ups!", ex.responseText);
+            },
+            success: function (response) {
+                var datos = response.split(',');
+                var titulo = datos[0];
+                var mensaje = datos[1];
+
+                if (mensaje != "ok") {
+                    myalert(titulo, mensaje);
+                } else {
+                    myalert(titulo, 'El club fue grabado exitosamente.');
+                    window.location.href = "/Mantenedores/Clubes";
+                }
+            }
+        });
+    }
+
+    function EliminarClub(id, descripcion) {
+        var mensaje = "¿Esta seguro(a) que desea elminar el club:\n " +
+            "'" + descripcion + "' ?"
+
+        var r = myconfirm("Confirmar", mensaje).then(function () {
+            var uname = "@sessionName";
+            var form = document.getElementById("Form_" + id);
+            form.UsuarioElimina.value = uname;
+            form.EechaElimina.value = "@DateTime.Now";
+            Grabar(id);
+        }, function () {
+            window.location.href = "/Mantenedores/Clubes";
+        });
+    };
+</script>

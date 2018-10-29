@@ -1,0 +1,244 @@
+﻿@{
+    @using Microsoft.AspNetCore.Http;
+    ViewData["Title"] = "Mantenedores Page";
+    string sessionName = Context.Session.GetString("_Login");
+
+}
+
+<!-- START BREADCRUMB -->
+<ul class="breadcrumb">
+    <li><a href="#">Mantenedores</a></li>
+    <li class="active">Series</li>
+</ul>
+<!-- END BREADCRUMB -->
+
+<!-- PAGE TITLE -->
+<div class="page-title">
+    <h2><span class="fa fa-arrow-circle-o-left"></span> Series</h2>
+    <div class="pull-right push-down-20">
+        <button class="btn btn-primary btn-modal pull-right hidden-mobile" data-toggle="modal" data-target="#Nueva">Nueva</button>
+    </div>
+</div>
+<!-- END PAGE TITLE -->
+
+<!-- PAGE CONTENT WRAPPER -->
+<div class="page-content-wrap">
+    <div class="row">
+        <div class="col-md-12">
+
+            <!-- START DEFAULT DATATABLE -->
+            <div class="panel panel-default">
+                <div class="panel-body">
+                    <div class="table-responsive">
+                        <table class="table datatable">
+                            <thead>
+                                <tr>
+                                    <th>Id</th>
+                                    <th>Descripción</th>
+                                    <th>Edad Mínima</th>
+                                    <th>Edad Máxima</th>
+                                    <th>Editar</th>
+                                    <th>Quitar</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (ViewBag.Series != null) {
+                                    @foreach (var item in ViewBag.Series)
+                                    {
+                                    <tr>
+                                        <td>@item.IdSerie</td>
+                                        <td>@item.Descripcion</td>
+                                        <td>@item.EdadDesde</td>
+                                        <td>@item.EdadHasta</td>
+                                        <td><button class="btn btn-sm btn-twitter btn-modal hidden-mobile" data-toggle="modal" data-target="#Editar-@item.IdSerie"><span class="glyphicon glyphicon-edit"></span></button></td>
+                                        <td><button class="btn btn-sm btn-inverse btn-modal hidden-mobile" onclick="EliminarSerie(@item.IdSerie, '@item.Descripcion')"><span class="glyphicon glyphicon-trash"></span></button></td>
+                                    </tr>
+                                    }
+                            }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <!-- END DEFAULT DATATABLE -->
+
+            @* -- Modal Editar/Eliminar -- *@
+            @if (ViewBag.Series != null) {
+                @foreach (var item in ViewBag.Series)
+                {
+                    <div class="modal" id="Editar-@item.IdSerie" tabindex="-1" role="dialog" aria-labelledby="largeModalHead" aria-hidden="true">
+                        <div class="modal-dialog modal-lg" style="z-index: 999999999;">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                                    <h4 class="modal-title text-uppercase" id="largeModalHead">editar serie</h4>
+                                </div>
+                                <div class="modal-body" id="serie-@item.IdSerie" style="height:350px; overflow-x:auto;">
+                                    <div class="row">
+                                        <form id="Form_@item.IdSerie" class="form-horizontal">
+
+                                            <input id="IdSerie" name="IdSerie" type="hidden" value="@item.IdSerie" />
+                                            <input id="UsuarioElimina" name="UsuarioElimina" type="hidden" />
+                                            <input id="FechaElimina" name="FechaElimina" type="hidden" />
+
+                                            <div class="col-md-12 col-sm-12 col-xs-7">
+                                                <div class="panel-body">
+                                                    <h3><span class="fa fa-pencil"></span> Información</h3>
+                                                    <p>Puede editar las actuales <strong>series</strong> del sistema, actualice si desea y luego presione el botón 'Guardar'</p>
+                                                </div>
+                                                <div class="panel panel-default">
+                                                    <div class="panel-body form-group-separated">
+                                                        <div class="form-group">
+                                                            <label class="col-md-3 col-xs-5 control-label">Descripción</label>
+                                                            <div class="col-md-9 col-xs-7">
+                                                                <input type="text" class="form-control" name="Descripcion" id="Descripcion" value="@item.Descripcion" maxlength="120" placeholder="Descripción">
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label class="col-md-3 col-xs-5 control-label">Edad Mímina</label>
+                                                            <div class="col-md-9 col-xs-7">
+                                                                <input type="text" class="form-control" name="EdadDesde" id="EdadDesde" value="@item.EdadDesde" maxlength="120" placeholder="Edad mínima">
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label class="col-md-3 col-xs-5 control-label">Edad máxima</label>
+                                                            <div class="col-md-9 col-xs-7">
+                                                                <input type="text" class="form-control" name="EdadHasta" id="EdadHasta" value="@item.EdadHasta" maxlength="120" placeholder="Edad máxima">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                                <div class="modal-footer">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <button class="btn btn-primary" type="button" id="guardar_@item.IdSerie" onclick="Grabar(@item.IdSerie)">Guardar</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+            @* -- Fin modal Editar/Eliminar --*@
+
+            @* -- Modal Nuevo --*@
+            <div class="modal" id="Nueva" tabindex="-1" role="dialog" aria-labelledby="largeModalHead" aria-hidden="true">
+                <div class="modal-dialog modal-lg" style="z-index: 999999999;">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                            <h4 class="modal-title text-uppercase" id="largeModalHead">nueva serie</h4>
+                        </div>
+                        <div class="modal-body" id="serie-0" style="height:350px; overflow-x:auto;">
+                            <div class="row">
+                                <form id="Form_0" class="form-horizontal">
+                                    <input id="UsuarioCrea" name="UsuarioCrea" type="hidden" />
+                                    <input id="FechaCrea" name="FechaCrea" type="hidden" />
+
+                                    <div class="col-md-12 col-sm-12 col-xs-7">
+                                        <div class="panel panel-default">
+                                            <div class="panel-body">
+                                                <h3><span class="fa fa-pencil"></span> Información</h3>
+                                                <p>Ingrese los datos de la nueva <strong>serie</strong> y luego presione el botón 'Guardar'</p>
+                                            </div>
+                                            <div class="panel-body form-group-separated">
+                                                <div class="form-group">
+                                                    <label class="col-md-3 col-xs-5 control-label">Descripción</label>
+                                                    <div class="col-md-9 col-xs-7">
+                                                        <input type="text" class="form-control" name="Descripcion" id="Descripcion" maxlength="120" placeholder="Descripción">
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-3 col-xs-5 control-label">Edad Mínima</label>
+                                                    <div class="col-md-9 col-xs-7">
+                                                        <input type="text" class="form-control" name="EdadDesde" id="EdadDesde" maxlength="120" placeholder="Edad mínima">
+                                                    </div>
+                                                </div>
+                                                <div class="form-group">
+                                                    <label class="col-md-3 col-xs-5 control-label">Edad Máxima</label>
+                                                    <div class="col-md-9 col-xs-7">
+                                                        <input type="text" class="form-control" name="EdadHasta" id="EdadHasta" maxlength="120" placeholder="Edad máxima">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <button class="btn btn-primary" type="button" id="guardar-nueva" onclick="Grabar(0)">Guardar</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @* -- Fin modal Nuevo --*@
+
+        </div>
+    </div>
+
+</div>
+<!-- PAGE CONTENT WRAPPER -->
+
+<script>
+
+    function Grabar(id) {
+        if (id == 0) {
+            var usuariocrea = "@sessionName";
+            var form = document.getElementById("Form_" + id);
+            form.UsuarioCrea.value = usuariocrea;
+            form.FechaCrea.value = "@DateTime.Now";
+        }
+
+        var formData = new FormData(document.getElementById("Form_" + id));
+        formData.append("dato", "valor");
+        $.ajax({
+            url: '/Mantenedores/GrabarSeries',
+            type: 'Post',
+            dataType: "html",
+            data: formData,
+            cache: false,
+            contentType: false,
+            processData: false,
+            error: function (ex) {
+                myalert("Ups!", ex.responseText);
+            },
+            success: function (response) {
+                var datos = response.split(',');
+                var titulo = datos[0];
+                var mensaje = datos[1];
+
+                if (mensaje != "ok") {
+                    myalert(titulo, mensaje);
+                } else {
+                    myalert(titulo, 'La serie fue grabada exitosamente.');
+                    window.location.href = "/Mantenedores/Series";
+                }
+            }
+        });
+    }
+
+    function EliminarSerie(id, descripcion) {
+        var mensaje = "¿Esta seguro(a) que desea elminar la serie:\n " +
+            "'" + descripcion + "' ?"
+
+        var r = myconfirm("Confirmar", mensaje).then(function () {
+            var uname = "@sessionName";
+            var form = document.getElementById("Form_" + id);
+            form.UsuarioElimina.value = uname;
+            form.FechaElimina.value = "@DateTime.Now";
+            Grabar(id);
+        }, function () {
+            window.location.href = "/Mantenedores/Series";
+        });
+    };
+</script>

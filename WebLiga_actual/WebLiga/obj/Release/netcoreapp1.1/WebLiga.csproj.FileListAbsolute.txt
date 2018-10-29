@@ -1,0 +1,11 @@
+E:\Josue\Desarrollos\WebLiga\WebLiga\bin\Release\netcoreapp1.1\WebLiga.deps.json
+E:\Josue\Desarrollos\WebLiga\WebLiga\bin\Release\netcoreapp1.1\WebLiga.runtimeconfig.json
+E:\Josue\Desarrollos\WebLiga\WebLiga\bin\Release\netcoreapp1.1\WebLiga.runtimeconfig.dev.json
+E:\Josue\Desarrollos\WebLiga\WebLiga\bin\Release\netcoreapp1.1\WebLiga.dll
+E:\Josue\Desarrollos\WebLiga\WebLiga\bin\Release\netcoreapp1.1\WebLiga.pdb
+E:\Josue\Desarrollos\WebLiga\WebLiga\obj\Release\netcoreapp1.1\WebLiga.csproj.CoreCompileInputs.cache
+E:\Josue\Desarrollos\WebLiga\WebLiga\obj\Release\netcoreapp1.1\WebLiga.AssemblyInfoInputs.cache
+E:\Josue\Desarrollos\WebLiga\WebLiga\obj\Release\netcoreapp1.1\WebLiga.AssemblyInfo.cs
+E:\Josue\Desarrollos\WebLiga\WebLiga\obj\Release\netcoreapp1.1\WebLiga.dll
+E:\Josue\Desarrollos\WebLiga\WebLiga\obj\Release\netcoreapp1.1\WebLiga.pdb
+E:\Josue\Desarrollos\WebLiga\WebLiga\obj\Release\netcoreapp1.1\WebLiga.csprojAssemblyReference.cache

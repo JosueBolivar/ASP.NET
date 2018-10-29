@@ -1,0 +1,74 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<!-- START BREADCRUMB -->
+<ul class="breadcrumb">
+    <li><a href="#">Home</a></li>
+    <li class="active">Index</li>
+</ul>
+<!-- END BREADCRUMB -->
+
+<div class="content-frame">
+    <!-- START CONTENT FRAME TOP -->
+    <div class="content-frame-top">
+        <div class="page-title">
+            <h2><span class="fa fa-calendar"></span> Fechas Campeonato</h2>
+        </div>
+        <div class="pull-right">
+            <button class="btn btn-default content-frame-left-toggle"><span class="fa fa-bars"></span></button>
+        </div>
+    </div>
+    <!-- END CONTENT FRAME TOP -->
+    <!-- START CONTENT FRAME LEFT -->
+    <div class="content-frame-left" style="height: 638px;">
+        <h4>New Event</h4>
+        <div class="form-group">
+            <div class="input-group">
+                <input type="text" class="form-control" id="new-event-text" placeholder="Event text...">
+                <div class="input-group-btn">
+                    <button class="btn btn-primary" id="new-event">Add</button>
+                </div>
+            </div>
+        </div>
+
+        <h4>External Events</h4>
+        <div class="list-group border-bottom" id="external-events">
+            <a class="list-group-item external-event ui-draggable ui-draggable-handle">Lorem ipsum dolor</a>
+            <a class="list-group-item external-event ui-draggable ui-draggable-handle">Nam a nisi et nisi</a>
+            <a class="list-group-item external-event ui-draggable ui-draggable-handle">Donec tristique eu</a>
+            <a class="list-group-item external-event ui-draggable ui-draggable-handle">Vestibulum cursus</a>
+            <a class="list-group-item external-event ui-draggable ui-draggable-handle">Etiam euismod</a>
+            <a class="list-group-item external-event ui-draggable ui-draggable-handle">Sed pharetra dolor</a>
+        </div>
+
+        <div class="push-up-10">
+            <label class="check">
+                <div class="icheckbox_minimal-grey" style="position: relative;"><input type="checkbox" class="icheckbox" id="drop-remove" style="position: absolute; opacity: 0;"><ins class="iCheck-helper" style="position: absolute; top: 0%; left: 0%; display: block; width: 100%; height: 100%; margin: 0px; padding: 0px; background: rgb(255, 255, 255); border: 0px; opacity: 0;"></ins></div> Remove after drop
+            </label>
+        </div>
+
+        <div class="panel panel-default push-up-10">
+            <div class="panel-body padding-top-0">
+                <h4>Fullcalendar</h4>
+                <p>FullCalendar is a jQuery plugin that provides a full-sized, drag &amp; drop event calendar like the one below. It uses AJAX to fetch events on-the-fly and is easily configured to use your own feed format. It is visually customizable with a rich API.</p>
+            </div>
+        </div>
+    </div>
+    <!-- END CONTENT FRAME LEFT -->
+    <!-- START CONTENT FRAME BODY -->
+    <div class="content-frame-body padding-bottom-0">
+
+        <div class="row">
+            <div class="col-md-12">
+                <div id="alert_holder"></div>
+                <div class="calendar">
+                    <div id="calendar" class="fc fc-ltr fc-unthemed"><div class="fc-toolbar"><div class="fc-left"><div class="fc-button-group"><button type="button" class="fc-prev-button fc-button fc-state-default fc-corner-left"><span class="fc-icon fc-icon-left-single-arrow"></span></button><button type="button" class="fc-next-button fc-button fc-state-default fc-corner-right"><span class="fc-icon fc-icon-right-single-arrow"></span></button></div><button type="button" class="fc-today-button fc-button fc-state-default fc-corner-left fc-corner-right fc-state-disabled" disabled="disabled">today</button></div><div class="fc-right"><div class="fc-button-group"><button type="button" class="fc-month-button fc-button fc-state-default fc-corner-left fc-state-active">month</button><button type="button" class="fc-agendaWeek-button fc-button fc-state-default">week</button><button type="button" class="fc-agendaDay-button fc-button fc-state-default fc-corner-right">day</button></div></div><div class="fc-center"><h2>June 2018</h2></div><div class="fc-clear"></div></div><div class="fc-view-container" style=""><div class="fc-view fc-month-view fc-basic-view" style=""><table><thead><tr><td class="fc-widget-header"><div class="fc-row fc-widget-header"><table><thead><tr><th class="fc-day-header fc-widget-header fc-sun">Sun</th><th class="fc-day-header fc-widget-header fc-mon">Mon</th><th class="fc-day-header fc-widget-header fc-tue">Tue</th><th class="fc-day-header fc-widget-header fc-wed">Wed</th><th class="fc-day-header fc-widget-header fc-thu">Thu</th><th class="fc-day-header fc-widget-header fc-fri">Fri</th><th class="fc-day-header fc-widget-header fc-sat">Sat</th></tr></thead></table></div></td></tr></thead><tbody><tr><td class="fc-widget-content"><div class="fc-day-grid-container fc-scroller" style="height: 283px;"><div class="fc-day-grid"><div class="fc-row fc-week fc-widget-content" style=""><div class="fc-bg"><table><tbody><tr><td class="fc-day fc-widget-content fc-sun fc-other-month fc-past" data-date="2018-05-27"></td><td class="fc-day fc-widget-content fc-mon fc-other-month fc-past" data-date="2018-05-28"></td><td class="fc-day fc-widget-content fc-tue fc-other-month fc-past" data-date="2018-05-29"></td><td class="fc-day fc-widget-content fc-wed fc-other-month fc-past" data-date="2018-05-30"></td><td class="fc-day fc-widget-content fc-thu fc-other-month fc-past" data-date="2018-05-31"></td><td class="fc-day fc-widget-content fc-fri fc-past" data-date="2018-06-01"></td><td class="fc-day fc-widget-content fc-sat fc-past" data-date="2018-06-02"></td></tr></tbody></table></div><div class="fc-content-skeleton"><table><thead><tr><td class="fc-day-number fc-sun fc-other-month fc-past" data-date="2018-05-27">27</td><td class="fc-day-number fc-mon fc-other-month fc-past" data-date="2018-05-28">28</td><td class="fc-day-number fc-tue fc-other-month fc-past" data-date="2018-05-29">29</td><td class="fc-day-number fc-wed fc-other-month fc-past" data-date="2018-05-30">30</td><td class="fc-day-number fc-thu fc-other-month fc-past" data-date="2018-05-31">31</td><td class="fc-day-number fc-fri fc-past" data-date="2018-06-01">1</td><td class="fc-day-number fc-sat fc-past" data-date="2018-06-02">2</td></tr></thead><tbody><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr></tbody></table></div></div><div class="fc-row fc-week fc-widget-content" style=""><div class="fc-bg"><table><tbody><tr><td class="fc-day fc-widget-content fc-sun fc-past" data-date="2018-06-03"></td><td class="fc-day fc-widget-content fc-mon fc-past" data-date="2018-06-04"></td><td class="fc-day fc-widget-content fc-tue fc-past" data-date="2018-06-05"></td><td class="fc-day fc-widget-content fc-wed fc-past" data-date="2018-06-06"></td><td class="fc-day fc-widget-content fc-thu fc-past" data-date="2018-06-07"></td><td class="fc-day fc-widget-content fc-fri fc-past" data-date="2018-06-08"></td><td class="fc-day fc-widget-content fc-sat fc-past" data-date="2018-06-09"></td></tr></tbody></table></div><div class="fc-content-skeleton"><table><thead><tr><td class="fc-day-number fc-sun fc-past" data-date="2018-06-03">3</td><td class="fc-day-number fc-mon fc-past" data-date="2018-06-04">4</td><td class="fc-day-number fc-tue fc-past" data-date="2018-06-05">5</td><td class="fc-day-number fc-wed fc-past" data-date="2018-06-06">6</td><td class="fc-day-number fc-thu fc-past" data-date="2018-06-07">7</td><td class="fc-day-number fc-fri fc-past" data-date="2018-06-08">8</td><td class="fc-day-number fc-sat fc-past" data-date="2018-06-09">9</td></tr></thead><tbody><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr></tbody></table></div></div><div class="fc-row fc-week fc-widget-content" style=""><div class="fc-bg"><table><tbody><tr><td class="fc-day fc-widget-content fc-sun fc-past" data-date="2018-06-10"></td><td class="fc-day fc-widget-content fc-mon fc-past" data-date="2018-06-11"></td><td class="fc-day fc-widget-content fc-tue fc-past" data-date="2018-06-12"></td><td class="fc-day fc-widget-content fc-wed fc-past" data-date="2018-06-13"></td><td class="fc-day fc-widget-content fc-thu fc-past" data-date="2018-06-14"></td><td class="fc-day fc-widget-content fc-fri fc-past" data-date="2018-06-15"></td><td class="fc-day fc-widget-content fc-sat fc-past" data-date="2018-06-16"></td></tr></tbody></table></div><div class="fc-content-skeleton"><table><thead><tr><td class="fc-day-number fc-sun fc-past" data-date="2018-06-10">10</td><td class="fc-day-number fc-mon fc-past" data-date="2018-06-11">11</td><td class="fc-day-number fc-tue fc-past" data-date="2018-06-12">12</td><td class="fc-day-number fc-wed fc-past" data-date="2018-06-13">13</td><td class="fc-day-number fc-thu fc-past" data-date="2018-06-14">14</td><td class="fc-day-number fc-fri fc-past" data-date="2018-06-15">15</td><td class="fc-day-number fc-sat fc-past" data-date="2018-06-16">16</td></tr></thead><tbody><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr></tbody></table></div></div><div class="fc-row fc-week fc-widget-content" style=""><div class="fc-bg"><table><tbody><tr><td class="fc-day fc-widget-content fc-sun fc-past" data-date="2018-06-17"></td><td class="fc-day fc-widget-content fc-mon fc-past" data-date="2018-06-18"></td><td class="fc-day fc-widget-content fc-tue fc-past" data-date="2018-06-19"></td><td class="fc-day fc-widget-content fc-wed fc-past" data-date="2018-06-20"></td><td class="fc-day fc-widget-content fc-thu fc-past" data-date="2018-06-21"></td><td class="fc-day fc-widget-content fc-fri fc-past" data-date="2018-06-22"></td><td class="fc-day fc-widget-content fc-sat fc-past" data-date="2018-06-23"></td></tr></tbody></table></div><div class="fc-content-skeleton"><table><thead><tr><td class="fc-day-number fc-sun fc-past" data-date="2018-06-17">17</td><td class="fc-day-number fc-mon fc-past" data-date="2018-06-18">18</td><td class="fc-day-number fc-tue fc-past" data-date="2018-06-19">19</td><td class="fc-day-number fc-wed fc-past" data-date="2018-06-20">20</td><td class="fc-day-number fc-thu fc-past" data-date="2018-06-21">21</td><td class="fc-day-number fc-fri fc-past" data-date="2018-06-22">22</td><td class="fc-day-number fc-sat fc-past" data-date="2018-06-23">23</td></tr></thead><tbody><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr></tbody></table></div></div><div class="fc-row fc-week fc-widget-content" style=""><div class="fc-bg"><table><tbody><tr><td class="fc-day fc-widget-content fc-sun fc-today fc-state-highlight" data-date="2018-06-24"></td><td class="fc-day fc-widget-content fc-mon fc-future" data-date="2018-06-25"></td><td class="fc-day fc-widget-content fc-tue fc-future" data-date="2018-06-26"></td><td class="fc-day fc-widget-content fc-wed fc-future" data-date="2018-06-27"></td><td class="fc-day fc-widget-content fc-thu fc-future" data-date="2018-06-28"></td><td class="fc-day fc-widget-content fc-fri fc-future" data-date="2018-06-29"></td><td class="fc-day fc-widget-content fc-sat fc-future" data-date="2018-06-30"></td></tr></tbody></table></div><div class="fc-content-skeleton"><table><thead><tr><td class="fc-day-number fc-sun fc-today fc-state-highlight" data-date="2018-06-24">24</td><td class="fc-day-number fc-mon fc-future" data-date="2018-06-25">25</td><td class="fc-day-number fc-tue fc-future" data-date="2018-06-26">26</td><td class="fc-day-number fc-wed fc-future" data-date="2018-06-27">27</td><td class="fc-day-number fc-thu fc-future" data-date="2018-06-28">28</td><td class="fc-day-number fc-fri fc-future" data-date="2018-06-29">29</td><td class="fc-day-number fc-sat fc-future" data-date="2018-06-30">30</td></tr></thead><tbody><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr></tbody></table></div></div><div class="fc-row fc-week fc-widget-content" style=""><div class="fc-bg"><table><tbody><tr><td class="fc-day fc-widget-content fc-sun fc-other-month fc-future" data-date="2018-07-01"></td><td class="fc-day fc-widget-content fc-mon fc-other-month fc-future" data-date="2018-07-02"></td><td class="fc-day fc-widget-content fc-tue fc-other-month fc-future" data-date="2018-07-03"></td><td class="fc-day fc-widget-content fc-wed fc-other-month fc-future" data-date="2018-07-04"></td><td class="fc-day fc-widget-content fc-thu fc-other-month fc-future" data-date="2018-07-05"></td><td class="fc-day fc-widget-content fc-fri fc-other-month fc-future" data-date="2018-07-06"></td><td class="fc-day fc-widget-content fc-sat fc-other-month fc-future" data-date="2018-07-07"></td></tr></tbody></table></div><div class="fc-content-skeleton"><table><thead><tr><td class="fc-day-number fc-sun fc-other-month fc-future" data-date="2018-07-01">1</td><td class="fc-day-number fc-mon fc-other-month fc-future" data-date="2018-07-02">2</td><td class="fc-day-number fc-tue fc-other-month fc-future" data-date="2018-07-03">3</td><td class="fc-day-number fc-wed fc-other-month fc-future" data-date="2018-07-04">4</td><td class="fc-day-number fc-thu fc-other-month fc-future" data-date="2018-07-05">5</td><td class="fc-day-number fc-fri fc-other-month fc-future" data-date="2018-07-06">6</td><td class="fc-day-number fc-sat fc-other-month fc-future" data-date="2018-07-07">7</td></tr></thead><tbody><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr></tbody></table></div></div></div></div></td></tr></tbody></table></div></div></div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <!-- END CONTENT FRAME BODY -->
+
+</div>
